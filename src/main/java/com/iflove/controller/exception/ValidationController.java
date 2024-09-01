@@ -1,6 +1,7 @@
 package com.iflove.controller.exception;
 
 import com.iflove.entity.RestBean;
+import com.iflove.entity.ResultCodeEnum;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,6 @@ public class ValidationController {
     @ExceptionHandler(ValidationException.class)
     public RestBean<Void> validateException(ValidationException e) {
         log.warn("Resolve [{}: {}]", e.getClass().getName(), e.getMessage());
-        return RestBean.failure(400, "请求参数错误");
+        return RestBean.failure(ResultCodeEnum.INVALID_PARAMETER);
     }
 }

@@ -1,6 +1,7 @@
 package com.iflove.controller;
 
 import com.iflove.entity.RestBean;
+import com.iflove.entity.ResultCodeEnum;
 import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
@@ -32,7 +33,7 @@ public class AuthorizeController {
     @GetMapping("check-email")
     public RestBean<Boolean> checkEmail(@RequestParam("email") @Email String email) {
         return accountService.existsAccountByEmail(email)
-                ? RestBean.success(true) : RestBean.failure(406, "该邮箱未被注册");
+                ? RestBean.success(true) : RestBean.failure(ResultCodeEnum.EMAIL_UN_USED);
     }
 
     /**

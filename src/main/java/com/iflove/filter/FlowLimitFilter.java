@@ -2,6 +2,7 @@ package com.iflove.filter;
 
 import com.iflove.entity.Const;
 import com.iflove.entity.RestBean;
+import com.iflove.entity.ResultCodeEnum;
 import com.iflove.utils.FlowUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
@@ -46,6 +47,6 @@ public class FlowLimitFilter extends HttpFilter {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json;charset=utf-8");
         PrintWriter writer = response.getWriter();
-        writer.write(RestBean.forbidden("操作频繁，请稍后再试").asJSONString());
+        writer.write(RestBean.failure(ResultCodeEnum.FREQUENT_OPERATION).asJSONString());
     }
 }

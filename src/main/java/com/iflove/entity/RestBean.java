@@ -2,6 +2,7 @@ package com.iflove.entity;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import lombok.Setter;
 
 /**
  * @author 苍镜月
@@ -10,23 +11,24 @@ import com.alibaba.fastjson2.JSONWriter;
  */
 public record RestBean<T> (int code, T data, String message) {
 
+    public static <T> RestBean<T> build(T body, ResultCodeEnum resultCodeEnum) {
+        return new RestBean<>(resultCodeEnum.getCode(), body, resultCodeEnum.getMessage());
+    }
+
     public static <T> RestBean<T> success(T data) {
-        return new RestBean<>(200, data, "请求成功");
+        return build(data, ResultCodeEnum.SUCCESS);
     }
 
     public static <T> RestBean<T> success() {
-        return success(null);
-    }
-
-    public static <T> RestBean<T> unauthorized(String message) {
-        return failure(401, message);
-    }
-    public static <T> RestBean<T> forbidden(String message) {
-        return failure(403, message);
+        return build(null, ResultCodeEnum.SUCCESS);
     }
 
     public static <T> RestBean<T> failure(int code, String message) {
         return new RestBean<>(code, null, message);
+    }
+
+    public static <T> RestBean<T> failure(ResultCodeEnum resultCodeEnum) {
+        return build(null, resultCodeEnum);
     }
 
     public String asJSONString() {

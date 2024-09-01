@@ -3,6 +3,7 @@ package com.iflove.config;
 import cn.hutool.jwt.JWTUtil;
 import com.iflove.entity.Const;
 import com.iflove.entity.RestBean;
+import com.iflove.entity.ResultCodeEnum;
 import com.iflove.entity.vo.response.AuthorizeVO;
 import com.iflove.security.JwtAuthenticationProvider;
 import com.iflove.security.JwtAuthenticationTokenFilter;
@@ -146,7 +147,7 @@ public class SecurityConfiguration {
                                         AuthenticationException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.failure(401, exception.getMessage()).asJSONString());
+        response.getWriter().write(RestBean.failure(ResultCodeEnum.WRONG_USERNAME_OR_PASSWORD).asJSONString());
     }
 
     public void onAccessDeny(HttpServletRequest request,
@@ -154,7 +155,7 @@ public class SecurityConfiguration {
                                AccessDeniedException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.forbidden(exception.getMessage()).asJSONString());
+        response.getWriter().write(RestBean.failure(ResultCodeEnum.FORBIDDEN).asJSONString());
     }
 
     public void onUnauthorized(HttpServletRequest request,
@@ -162,7 +163,7 @@ public class SecurityConfiguration {
                                 AuthenticationException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.unauthorized(exception.getMessage()).asJSONString());
+        response.getWriter().write(RestBean.failure(ResultCodeEnum.UNAUTHENTICATED).asJSONString());
     }
 
     public void onLogoutSuccess(HttpServletRequest request,
@@ -176,7 +177,7 @@ public class SecurityConfiguration {
         if (redisUtil.delete((String) JWTUtil.parseToken(token).getPayload("jwt_id"))) {
             writer.write(RestBean.success().asJSONString());
         } else {
-            writer.write(RestBean.failure(400, "退出登陆失败").asJSONString());
+            writer.write(RestBean.failure(ResultCodeEnum.UNKNOWN).asJSONString());
         }
     }
 }
