@@ -25,6 +25,15 @@ public interface AccountMapper extends BaseMapper<Account> {
     @Select("select * from user_account where username = #{username} and is_deleted = 0")
     Account getUserByName(String username);
 
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "role_id", property = "roles", many =
+                @Many(select = "getRolesById")
+            )
+    })
+    @Select("select * from user_account where id = #{id} and is_deleted = 0")
+    Account getUserById(String id);
+
     @Select("select role from user_roles where id = #{id}")
     List<Role> getRolesById(String id);
 

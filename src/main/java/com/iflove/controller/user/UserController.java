@@ -1,6 +1,8 @@
 package com.iflove.controller.user;
 
 import com.iflove.entity.RestBean;
+import com.iflove.entity.dto.Account;
+import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.service.AccountService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,7 @@ public class UserController {
     AccountService accountService;
 
 //    @GetMapping("info")
-//    public RestBean<> getUserInfo(@RequestParam("id") int id) {
-//        return
+//    public RestBean<UserInfoVO> getUserInfo(@RequestParam("id") String id) {
+//
 //    }
 }

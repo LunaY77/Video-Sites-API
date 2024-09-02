@@ -1,8 +1,5 @@
 package com.iflove.entity;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
-import lombok.Setter;
 
 /**
  * @author 苍镜月
@@ -31,7 +28,4 @@ public record RestBean<T> (int code, T data, String message) {
         return build(null, resultCodeEnum);
     }
 
-    public String asJSONString() {
-        return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);
-    }
 }

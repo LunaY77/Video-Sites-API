@@ -2,6 +2,7 @@ package com.iflove.config;
 
 import com.iflove.entity.RestBean;
 import com.iflove.entity.vo.response.AuthorizeVO;
+import com.iflove.utils.JacksonUtil;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -84,7 +85,7 @@ public class SwaggerConfiguration {
                                 .addApiResponse("200", new ApiResponse()
                                         .description("OK")
                                         .content(new Content().addMediaType("*/*", new MediaType()
-                                                .example(RestBean.success(new AuthorizeVO()).asJSONString())
+                                                .example(JacksonUtil.obj2String(RestBean.success(new AuthorizeVO())))
                                         ))
                                 )
                         )

@@ -18,4 +18,5 @@ public interface AccountService extends IService<Account> {
     String resetConfirm(ConfirmResetVO vo);
     String resetEmailAccountPassword(EmailResetVO vo);
     boolean existsAccountByEmail(String email);
+
 }

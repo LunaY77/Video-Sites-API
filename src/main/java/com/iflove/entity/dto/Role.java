@@ -14,4 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Role {
     private String role;
+
+    @Override
+    public String toString() {
+        return role;
+    }
 }

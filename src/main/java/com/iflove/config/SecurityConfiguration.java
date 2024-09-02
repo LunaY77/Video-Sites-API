@@ -4,10 +4,14 @@ import cn.hutool.jwt.JWTUtil;
 import com.iflove.entity.Const;
 import com.iflove.entity.RestBean;
 import com.iflove.entity.ResultCodeEnum;
+import com.iflove.entity.dto.Account;
+import com.iflove.entity.dto.Role;
 import com.iflove.entity.vo.response.AuthorizeVO;
 import com.iflove.security.JwtAuthenticationProvider;
 import com.iflove.security.JwtAuthenticationTokenFilter;
 import com.iflove.security.UserDetailsImpl;
+import com.iflove.service.AccountService;
+import com.iflove.utils.JacksonUtil;
 import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
@@ -51,7 +55,7 @@ public class SecurityConfiguration {
     @Resource
     private RedisUtil redisUtil;
     @Resource
-    private UserDetailsService userDetailsService;
+    private AccountService accountService;
     @Bean
     public JwtAuthenticationProvider jwtAuthenticationProvider() {
         return new JwtAuthenticationProvider();
@@ -114,37 +118,32 @@ public class SecurityConfiguration {
         // 获得登陆成功的用户信息，保存到token中，响应中返回用户基本信息
         log.info("我是验证方法");
         String username = (String) authentication.getPrincipal();
-        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+        Account user = accountService.getUserByName(username);
         String uuid = UUID.randomUUID().toString();
         Date expireTime = redisUtil.expireTime();
         Map<String, Object> map = new HashMap<>() {
             {
                 put("jwt_id", uuid);
-                put("id", userDetails.getId());
-                put("username", userDetails.getUsername());
-                put("authorities", userDetails.getAuthorities());
+                put("id", user.getId());
+                put("username", user.getUsername());
+                put("authorities",user.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
                 put("expire_time", expireTime);
-                put("created_at", userDetails.getCreatedAt());
-                put("update_at", userDetails.getUpdateAt());
-                put("avatar_url", userDetails.getAvatarUrl());
+                put("created_at", user.getCreatedAt());
+                put("update_at", user.getUpdateAt());
+                put("avatar_url", user.getAvatarUrl());
             }
         };
         String token = JWTUtil.createToken(map, Const.JWT_SIGN_KEY.getBytes());
         // 将 token的 uuid 存入redis中
         redisUtil.set(uuid, expireTime.getTime() - new Date().getTime());
         // response返回数据
-        AuthorizeVO vo = new AuthorizeVO();
-        vo.setId(userDetails.getId());
-        vo.setExpire((Date) map.get("expire_time"));
-        vo.setRoles(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
-        vo.setToken(token);
-        vo.setUsername((String) map.get("username"));
-        vo.setAvatarUrl(userDetails.getAvatarUrl());
-        vo.setCreatedAt(userDetails.getCreatedAt());
-        vo.setUpdateAt(userDetails.getUpdateAt());
+        AuthorizeVO vo = user.asViewObject(AuthorizeVO.class, v -> {
+            v.setToken(token);
+            v.setExpire(expireTime);
+        });
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.success(vo).asJSONString());
+        response.getWriter().write(JacksonUtil.obj2String(RestBean.success(vo)));
     }
 
     public void onAuthenticationFailure(HttpServletRequest request,
@@ -152,7 +151,7 @@ public class SecurityConfiguration {
                                         AuthenticationException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.failure(ResultCodeEnum.WRONG_USERNAME_OR_PASSWORD).asJSONString());
+        response.getWriter().write(JacksonUtil.obj2String(RestBean.failure(ResultCodeEnum.WRONG_USERNAME_OR_PASSWORD)));
     }
 
     public void onAccessDeny(HttpServletRequest request,
@@ -160,7 +159,7 @@ public class SecurityConfiguration {
                                AccessDeniedException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.failure(ResultCodeEnum.FORBIDDEN).asJSONString());
+        response.getWriter().write(JacksonUtil.obj2String(RestBean.failure(ResultCodeEnum.FORBIDDEN)));
     }
 
     public void onUnauthorized(HttpServletRequest request,
@@ -168,7 +167,7 @@ public class SecurityConfiguration {
                                 AuthenticationException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(RestBean.failure(ResultCodeEnum.UNAUTHENTICATED).asJSONString());
+        response.getWriter().write(JacksonUtil.obj2String(RestBean.failure(ResultCodeEnum.UNAUTHENTICATED)));
     }
 
     public void onLogoutSuccess(HttpServletRequest request,
@@ -180,9 +179,9 @@ public class SecurityConfiguration {
         String token = request.getHeader("Authorization").substring(7);
         // 根据 uuid 删除
         if (redisUtil.delete((String) JWTUtil.parseToken(token).getPayload("jwt_id"))) {
-            writer.write(RestBean.success().asJSONString());
+            writer.write(JacksonUtil.obj2String(RestBean.success()));
         } else {
-            writer.write(RestBean.failure(ResultCodeEnum.UNKNOWN).asJSONString());
+            writer.write(JacksonUtil.obj2String(RestBean.failure(ResultCodeEnum.UNKNOWN)));
         }
     }
 }
