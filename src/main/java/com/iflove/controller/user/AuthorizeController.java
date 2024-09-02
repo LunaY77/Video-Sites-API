@@ -6,6 +6,7 @@ import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
 import com.iflove.service.AccountService;
+import com.iflove.utils.MessageHandler;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,12 +31,6 @@ public class AuthorizeController {
     @Resource
     AccountService accountService;
 
-    @GetMapping("check-email")
-    public RestBean<Boolean> checkEmail(@RequestParam("email") @Email String email) {
-        return accountService.existsAccountByEmail(email)
-                ? RestBean.success(true) : RestBean.failure(ResultCodeEnum.EMAIL_UN_USED);
-    }
-
     /**
      * 请求邮件验证码
      * @param email 邮箱地址
@@ -47,7 +42,7 @@ public class AuthorizeController {
     public RestBean<Void> askVerifyCode(@RequestParam("email") @Email String email,
                                         @RequestParam("type") @Pattern(regexp = "(register|reset)") String type,
                                         HttpServletRequest request) {
-        return this.messageHandle(() ->
+        return MessageHandler.stringMessageHandle(() ->
                 accountService.registerEmailVerifyCode(type, email, request.getRemoteAddr()));
     }
 
@@ -58,7 +53,7 @@ public class AuthorizeController {
      */
     @PostMapping("register")
     public RestBean<Void> register(@RequestBody @Valid EmailRegisterVO vo) {
-        return messageHandle(vo, accountService::registerEmailAccount);
+        return MessageHandler.stringMessageHandle(vo, accountService::registerEmailAccount);
     }
 
     /**
@@ -68,7 +63,7 @@ public class AuthorizeController {
      */
     @PostMapping("/reset-confirm")
     public RestBean<Void> resetConfirm(@RequestBody @Valid ConfirmResetVO vo) {
-        return messageHandle(vo, accountService::resetConfirm);
+        return MessageHandler.stringMessageHandle(vo, accountService::resetConfirm);
     }
 
     /**
@@ -78,28 +73,6 @@ public class AuthorizeController {
      */
     @PostMapping("/reset-password")
     public RestBean<Void> resetPassword(@RequestBody @Valid EmailResetVO vo) {
-        return messageHandle(vo, accountService::resetEmailAccountPassword);
-    }
-
-    /**
-     * 针对于传入值为 VO对象 且返回值为String作为错误信息的方法进行统一处理
-     * @param vo 数据封装对象
-     * @param function 调用service方法
-     * @return 响应结果
-     * @param <T> 响应结果类型
-     */
-    private <T> RestBean<Void> messageHandle(T vo, Function<T, String> function) {
-        return messageHandle(() -> function.apply(vo));
-    }
-
-    /**
-     * 针对于返回值为String作为错误信息的方法进行统一处理
-     * @param action 具体操作
-     * @return 响应结果
-     * @param <T> 响应结果类型
-     */
-    private <T> RestBean<T> messageHandle(Supplier<String> action) {
-        String message = action.get();
-        return Objects.isNull(message) ? RestBean.success() : RestBean.failure(400, message);
+        return MessageHandler.stringMessageHandle(vo, accountService::resetEmailAccountPassword);
     }
 }

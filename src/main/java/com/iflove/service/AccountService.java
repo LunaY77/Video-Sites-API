@@ -5,6 +5,7 @@ import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
+import com.iflove.entity.vo.response.UserInfoVO;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -14,11 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 */
 public interface AccountService extends IService<Account> {
     Account getUserByName(String username);
-    Account getUserById(String id);
+    UserInfoVO getUserInfoById(String id);
     String registerEmailVerifyCode(String type, String email, String ip);
     String registerEmailAccount(EmailRegisterVO vo);
     String resetConfirm(ConfirmResetVO vo);
     String resetEmailAccountPassword(EmailResetVO vo);
     boolean existsAccountByEmail(String email);
-    Account saveUserAvatar(MultipartFile file, String username);
+    UserInfoVO saveUserAvatar(MultipartFile file, String username);
 }

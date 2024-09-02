@@ -7,6 +7,7 @@ import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
+import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.mapper.AccountMapper;
 import com.iflove.service.AccountService;
 import com.iflove.utils.FileUtil;
@@ -51,8 +52,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public Account getUserById(String id) {
-        return accountMapper.getUserById(id);
+    public UserInfoVO getUserInfoById(String id) {
+        return accountMapper.getUserById(id).asViewObject(UserInfoVO.class);
     }
 
     /**
@@ -128,7 +129,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public Account saveUserAvatar(MultipartFile file, String username) {
+    public UserInfoVO saveUserAvatar(MultipartFile file, String username) {
         String path = fileUtil.saveFile(file);
         if (Objects.isNull(path)) return null;
         boolean update = this.update()
@@ -136,7 +137,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
                 .set("avatar_url", path)
                 .set("update_at", new Date())
                 .update();
-        if (update) return this.getUserByName(username);
+        if (update) return this.getUserByName(username).asViewObject(UserInfoVO.class);
         return null;
     }
 

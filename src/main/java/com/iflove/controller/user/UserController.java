@@ -5,6 +5,7 @@ import com.iflove.entity.ResultCodeEnum;
 import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.service.AccountService;
+import com.iflove.utils.MessageHandler;
 import jakarta.annotation.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,16 +27,13 @@ public class UserController {
 
     @GetMapping("info")
     public RestBean<UserInfoVO> getUserInfo(@RequestParam("id") String id) {
-        Account user = accountService.getUserById(id);
-        if (Objects.isNull(user)) return RestBean.failure(ResultCodeEnum.ERROR);
-        return RestBean.success(user.asViewObject(UserInfoVO.class));
+        return MessageHandler.messageHandle(id, accountService::getUserInfoById);
     }
 
     @PutMapping("avatar/upload")
     public RestBean<UserInfoVO> uploadAvatar(MultipartFile file) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account account = accountService.saveUserAvatar(file, username);
-        return Objects.isNull(account) ?
-                RestBean.failure(ResultCodeEnum.ERROR) : RestBean.success(account.asViewObject(UserInfoVO.class));
+        return MessageHandler.messageHandle(() ->
+                accountService.saveUserAvatar(file, username));
     }
 }
