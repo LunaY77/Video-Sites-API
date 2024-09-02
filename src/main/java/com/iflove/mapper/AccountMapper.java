@@ -14,7 +14,6 @@ import java.util.List;
 * @createDate 2024-08-30 13:42:18
 * @Entity com.iflove.domain.Account
 */
-@Mapper
 public interface AccountMapper extends BaseMapper<Account> {
 
     @Results({
@@ -23,20 +22,13 @@ public interface AccountMapper extends BaseMapper<Account> {
                 @Many(select = "getRolesById")
             )
     })
-    @Select("select * from account where username = #{username}")
+    @Select("select * from user_account where username = #{username} and is_deleted = 0")
     Account getUserByName(String username);
 
-    @Select("select role from roles where id = #{id}")
+    @Select("select role from user_roles where id = #{id}")
     List<Role> getRolesById(String id);
 
-    @Insert("insert into account (username, password, email, register_time, role_id) values (#{username}, #{password}, #{email}, #{registerTime}, #{id})")
-    boolean saveUser(@Param("username") String username,
-                     @Param("password") String password,
-                     @Param("email") String email,
-                     @Param("registerTime") Date registerTime,
-                     @Param("id") String id);
-
-    @Insert("insert into roles values (#{id}, #{role})")
+    @Insert("insert into user_roles values (#{id}, #{role})")
     boolean saveRole(@Param("role") String role,
                      @Param("id") String id);
 }

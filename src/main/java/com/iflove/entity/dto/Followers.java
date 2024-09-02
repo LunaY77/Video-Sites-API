@@ -14,12 +14,12 @@ import lombok.Data;
 @TableName(value ="social_followers")
 @Data
 public class Followers {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private Integer id;
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
-    private Integer followerId;
+    private Long followerId;
 
-    private Integer followingId;
+    private Long followingId;
 
     private Date followTime;
 }

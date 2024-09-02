@@ -12,8 +12,12 @@ import java.util.List;
  */
 @Data
 public class AuthorizeVO {
+    private Long id;
     private String username;
     private List<String> roles;
     private String token;
     private Date expire;
+    private String avatarUrl;
+    private Date createdAt;
+    private Date updateAt;
 }

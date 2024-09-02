@@ -14,21 +14,21 @@ import lombok.Data;
 @TableName(value ="video_comment")
 @Data
 public class Comment {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private Integer id;
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
-    private Integer videoId;
+    private Long videoId;
 
-    private Integer parentId;
+    private Long parentId;
 
     private String content;
 
-    private Integer createdBy;
+    private Long createdBy;
 
     private Date createdAt;
 
     private Date updatedAt;
 
-    private Integer isDeleted;
+    private Boolean isDeleted;
 
 }

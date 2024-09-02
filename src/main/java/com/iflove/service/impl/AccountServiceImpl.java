@@ -79,7 +79,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         if (this.existsAccountByUsername(username)) return "此用户名已被注册";
         String passsword = passwordEncoder.encode(vo.getPassword());
         String roleId = UUID.randomUUID().toString();
-        if (accountMapper.saveUser(username, passsword, email, new Date(), roleId)) {
+        if (accountMapper.insert(new Account(username, passsword, email, new Date(), new Date(), roleId)) > 0) {
             if (accountMapper.saveRole(Const.ROLE_DEFAULT, roleId)) {
                 flowUtil.deleteVerifyCode(email);
                 return null;

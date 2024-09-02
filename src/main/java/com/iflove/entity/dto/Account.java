@@ -15,13 +15,13 @@ import java.util.List;
  * @version 1.0
  * @implNote
  */
-@TableName(value ="account")
+@TableName(value ="user_account")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private Integer id;
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
 
     private String username;
 
@@ -35,7 +35,18 @@ public class Account {
 
     private String avatarUrl;
 
+    private String roleId;
+
     private Boolean isDeleted;
 
     private List<Role> roles;
+
+    public Account(String username, String password, String email, Date createdAt, Date updateAt, String roleId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.createdAt = createdAt;
+        this.updateAt = updateAt;
+        this.roleId = roleId;
+    }
 }

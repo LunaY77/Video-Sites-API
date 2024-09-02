@@ -77,13 +77,13 @@ public class SecurityConfiguration {
                 )
                 // 登录
                 .formLogin(conf -> conf
-                        .loginProcessingUrl("/api/auth/login")
+                        .loginProcessingUrl("/api/user/auth/login")
                         .successHandler(this::onAuthenticationSuccess)
                         .failureHandler(this::onAuthenticationFailure)
                 )
                 // 登出
                 .logout(conf -> conf
-                        .logoutUrl("/api/auth/logout")
+                        .logoutUrl("/api/user/auth/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
                 // 异常处理
@@ -124,6 +124,9 @@ public class SecurityConfiguration {
                 put("username", userDetails.getUsername());
                 put("authorities", userDetails.getAuthorities());
                 put("expire_time", expireTime);
+                put("created_at", userDetails.getCreatedAt());
+                put("update_at", userDetails.getUpdateAt());
+                put("avatar_url", userDetails.getAvatarUrl());
             }
         };
         String token = JWTUtil.createToken(map, Const.JWT_SIGN_KEY.getBytes());
@@ -131,10 +134,14 @@ public class SecurityConfiguration {
         redisUtil.set(uuid, expireTime.getTime() - new Date().getTime());
         // response返回数据
         AuthorizeVO vo = new AuthorizeVO();
+        vo.setId(userDetails.getId());
         vo.setExpire((Date) map.get("expire_time"));
         vo.setRoles(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         vo.setToken(token);
         vo.setUsername((String) map.get("username"));
+        vo.setAvatarUrl(userDetails.getAvatarUrl());
+        vo.setCreatedAt(userDetails.getCreatedAt());
+        vo.setUpdateAt(userDetails.getUpdateAt());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(RestBean.success(vo).asJSONString());

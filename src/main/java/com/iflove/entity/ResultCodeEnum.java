@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public enum ResultCodeEnum {
     SUCCESS(200,"success"),
+    ERROR(401, "请求错误"),
     UNKNOWN(500, "未知的服务器错误"),
     INTERNAL(500, "内部服务错误"),
     UNAUTHENTICATED(501, "用户未登录"),
@@ -18,6 +19,7 @@ public enum ResultCodeEnum {
     FORBIDDEN(505, "没有权限访问"),
     FREQUENT_OPERATION(506, "操作频繁, 请稍后再试"),
     WRONG_USERNAME_OR_PASSWORD(507, "用户名或密码错误");
+
 
     private Integer code;
     private String message;

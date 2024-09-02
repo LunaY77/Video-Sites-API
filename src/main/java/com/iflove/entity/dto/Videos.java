@@ -14,8 +14,8 @@ import lombok.Data;
 @TableName(value ="video_videos")
 @Data
 public class Videos {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private Integer id;
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
     private String title;
 
@@ -27,7 +27,7 @@ public class Videos {
 
     private String filePath;
 
-    private Integer authorId;
+    private Long authorId;
 
     private Integer clickCount;
 
@@ -35,5 +35,5 @@ public class Videos {
 
     private Integer commentCount;
 
-    private Integer isDeleted;
+    private Boolean isDeleted;
 }
