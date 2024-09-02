@@ -32,7 +32,7 @@ public interface AccountMapper extends BaseMapper<Account> {
             )
     })
     @Select("select * from user_account where id = #{id} and is_deleted = 0")
-    Account getUserById(String id);
+    Account getUserById(Long id);
 
     @Select("select role from user_roles where id = #{id}")
     List<Role> getRolesById(String id);

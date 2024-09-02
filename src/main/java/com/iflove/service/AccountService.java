@@ -15,11 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 */
 public interface AccountService extends IService<Account> {
     Account getUserByName(String username);
-    UserInfoVO getUserInfoById(String id);
+    UserInfoVO getUserInfoById(Long id);
     String registerEmailVerifyCode(String type, String email, String ip);
     String registerEmailAccount(EmailRegisterVO vo);
     String resetConfirm(ConfirmResetVO vo);
     String resetEmailAccountPassword(EmailResetVO vo);
     boolean existsAccountByEmail(String email);
-    UserInfoVO saveUserAvatar(MultipartFile file, String username);
+    UserInfoVO saveUserAvatar(MultipartFile file, Long id);
 }

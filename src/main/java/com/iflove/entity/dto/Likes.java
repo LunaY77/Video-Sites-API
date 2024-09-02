@@ -13,7 +13,7 @@ import lombok.Data;
 @TableName(value ="social_likes")
 @Data
 public class Likes {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     private Long userId;

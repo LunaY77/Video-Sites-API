@@ -14,7 +14,7 @@ import lombok.Data;
 @TableName(value ="video_videos")
 @Data
 public class Videos {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     private String title;
@@ -36,4 +36,13 @@ public class Videos {
     private Integer commentCount;
 
     private Boolean isDeleted;
+
+    public Videos(String title, String description, Date createdAt, Date updatedAt, String filePath, Long authorId) {
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.filePath = filePath;
+        this.authorId = authorId;
+    }
 }

@@ -49,6 +49,6 @@ class VideoSitesApiApplicationTests {
         assertTrue(savedFile.exists(), "保存的文件不存在");
         System.out.println(savedFilePath);
         // 清理测试文件
-        // savedFile.delete();
+         savedFile.delete();
     }
 }

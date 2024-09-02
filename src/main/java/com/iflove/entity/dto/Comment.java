@@ -14,7 +14,7 @@ import lombok.Data;
 @TableName(value ="video_comment")
 @Data
 public class Comment {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     private Long videoId;

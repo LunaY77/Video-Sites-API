@@ -1,5 +1,6 @@
 package com.iflove.entity.vo.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @implNote
  */
 @Data
+@AllArgsConstructor
 public class VideoPostVO {
     private MultipartFile file;
     private String title;

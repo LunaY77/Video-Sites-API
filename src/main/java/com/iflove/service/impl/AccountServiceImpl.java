@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -52,7 +53,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public UserInfoVO getUserInfoById(String id) {
+    public UserInfoVO getUserInfoById(Long id) {
         return accountMapper.getUserById(id).asViewObject(UserInfoVO.class);
     }
 
@@ -129,16 +130,19 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     }
 
     @Override
-    public UserInfoVO saveUserAvatar(MultipartFile file, String username) {
+    public UserInfoVO saveUserAvatar(MultipartFile file, Long id) {
         String path = fileUtil.saveFile(file);
         if (Objects.isNull(path)) return null;
         boolean update = this.update()
-                .eq("username", username)
+                .eq("id", id)
                 .set("avatar_url", path)
                 .set("update_at", new Date())
                 .update();
-        if (update) return this.getUserByName(username).asViewObject(UserInfoVO.class);
-        return null;
+        if (update) return this.getUserInfoById(id);
+        else {
+            new File(path).delete();
+            return null;
+        }
     }
 
     private boolean existsAccountByUsername(String username) {

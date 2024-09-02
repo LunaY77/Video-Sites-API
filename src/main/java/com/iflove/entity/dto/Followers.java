@@ -14,7 +14,7 @@ import lombok.Data;
 @TableName(value ="social_followers")
 @Data
 public class Followers {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     private Long followerId;
