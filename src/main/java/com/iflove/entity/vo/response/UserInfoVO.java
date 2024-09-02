@@ -1,5 +1,6 @@
 package com.iflove.entity.vo.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.iflove.entity.dto.Role;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,8 @@ public class UserInfoVO {
     private String username;
     private List<Role> roles;
     private String avatarUrl;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateAt;
 }

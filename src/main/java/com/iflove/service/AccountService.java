@@ -13,10 +13,10 @@ import com.iflove.entity.vo.request.EmailResetVO;
 */
 public interface AccountService extends IService<Account> {
     Account getUserByName(String username);
+    Account getUserById(String id);
     String registerEmailVerifyCode(String type, String email, String ip);
     String registerEmailAccount(EmailRegisterVO vo);
     String resetConfirm(ConfirmResetVO vo);
     String resetEmailAccountPassword(EmailResetVO vo);
     boolean existsAccountByEmail(String email);
-
 }

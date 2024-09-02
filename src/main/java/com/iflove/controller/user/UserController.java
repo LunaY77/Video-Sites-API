@@ -1,11 +1,14 @@
 package com.iflove.controller.user;
 
 import com.iflove.entity.RestBean;
+import com.iflove.entity.ResultCodeEnum;
 import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.service.AccountService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 /**
  * @author 苍镜月
@@ -18,8 +21,10 @@ public class UserController {
     @Resource
     AccountService accountService;
 
-//    @GetMapping("info")
-//    public RestBean<UserInfoVO> getUserInfo(@RequestParam("id") String id) {
-//
-//    }
+    @GetMapping("info")
+    public RestBean<UserInfoVO> getUserInfo(@RequestParam("id") String id) {
+        Account user = accountService.getUserById(id);
+        if (Objects.isNull(user)) return RestBean.failure(ResultCodeEnum.ERROR);
+        return RestBean.success(user.asViewObject(UserInfoVO.class));
+    }
 }

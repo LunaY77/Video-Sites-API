@@ -7,9 +7,11 @@ import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
+import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.mapper.AccountMapper;
 import com.iflove.service.AccountService;
 import com.iflove.utils.FlowUtil;
+import com.iflove.utils.JacksonUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -44,6 +46,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     @Override
     public Account getUserByName(String username) {
         return accountMapper.getUserByName(username);
+    }
+
+    @Override
+    public Account getUserById(String id) {
+        return accountMapper.getUserById(id);
     }
 
     /**
