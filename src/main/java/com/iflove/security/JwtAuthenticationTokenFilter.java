@@ -69,7 +69,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         //将认证过了凭证保存到security的上下文中以便于在程序中使用
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.setAttribute("id", JWTUtil.parseToken(authToken).getPayload("id"));
 
         filterChain.doFilter(request, response);
     }

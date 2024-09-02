@@ -40,4 +40,10 @@ public class Const {
 
     //用户角色
     public final static String ROLE_DEFAULT = "user";
+
+    // 图片保存路径
+    public static final String PIC_ROOT = "src/main/resources/static/pic";
+
+    // 视频保存路径
+    public static final String VIDEO_ROOT = "src/main/resources/static/video";
 }

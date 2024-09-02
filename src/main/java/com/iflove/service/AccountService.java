@@ -5,6 +5,7 @@ import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author 苍镜月
@@ -19,4 +20,5 @@ public interface AccountService extends IService<Account> {
     String resetConfirm(ConfirmResetVO vo);
     String resetEmailAccountPassword(EmailResetVO vo);
     boolean existsAccountByEmail(String email);
+    Account saveUserAvatar(MultipartFile file, String username);
 }

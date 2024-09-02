@@ -7,17 +7,17 @@ import com.iflove.entity.dto.Account;
 import com.iflove.entity.vo.request.ConfirmResetVO;
 import com.iflove.entity.vo.request.EmailRegisterVO;
 import com.iflove.entity.vo.request.EmailResetVO;
-import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.mapper.AccountMapper;
 import com.iflove.service.AccountService;
+import com.iflove.utils.FileUtil;
 import com.iflove.utils.FlowUtil;
-import com.iflove.utils.JacksonUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -37,6 +37,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     private FlowUtil flowUtil;
     @Resource
     PasswordEncoder passwordEncoder;
+    @Resource
+    private FileUtil fileUtil;
 
     /**
      * 根据username获得用户对象
@@ -123,6 +125,19 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     @Override
     public boolean existsAccountByEmail(String email) {
         return this.baseMapper.exists(Wrappers.<Account>query().eq("email", email));
+    }
+
+    @Override
+    public Account saveUserAvatar(MultipartFile file, String username) {
+        String path = fileUtil.saveFile(file);
+        if (Objects.isNull(path)) return null;
+        boolean update = this.update()
+                .eq("username", username)
+                .set("avatar_url", path)
+                .set("update_at", new Date())
+                .update();
+        if (update) return this.getUserByName(username);
+        return null;
     }
 
     private boolean existsAccountByUsername(String username) {

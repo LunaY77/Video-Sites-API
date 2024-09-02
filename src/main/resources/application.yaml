@@ -12,3 +12,21 @@ spring:
     url: jdbc:mysql://localhost:3306/video_sites_api
     username: root
     password: bbb123=6
+
+file:
+  upload:
+    allowPicTypes:
+      - image/jpeg
+      - image/png
+      - image/jpg
+      - image/bmp
+    allowVideoTypes:
+      - video/mp4
+      - video/webm
+      - video/x-msvideo
+      - video/quicktime
+      - video/x-matroska
+      - video/x-flv
+      - video/x-ms-wmv
+      - video/mpeg
+      - video/3gpp
