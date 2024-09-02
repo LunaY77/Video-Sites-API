@@ -1,4 +1,4 @@
-package com.iflove.controller;
+package com.iflove.controller.user;
 
 import com.iflove.entity.RestBean;
 import com.iflove.entity.ResultCodeEnum;
@@ -21,10 +21,10 @@ import java.util.function.Supplier;
 /**
  * @author 苍镜月
  * @version 1.0
- * @implNote
+ * @implNote 实现登录，退出登录，注册，重置密码接口
  */
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("api/user/auth")
 @Validated
 public class AuthorizeController {
     @Resource

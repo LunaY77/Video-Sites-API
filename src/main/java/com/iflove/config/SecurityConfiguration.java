@@ -67,9 +67,7 @@ public class SecurityConfiguration {
         return httpSecurity
                 .authorizeHttpRequests(conf -> conf
                         // 对登录注册允许匿名访问
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // 放行错误页面
-                        .requestMatchers("/error/**").permitAll()
+                        .requestMatchers("/api/user/auth/**").permitAll()
                         // 测试
                         .requestMatchers("/test").permitAll()
                         // 接口文档

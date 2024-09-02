@@ -1,5 +1,7 @@
 package com.iflove.entity.dto;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
+    @TableId(type = IdType.ASSIGN_UUID)
     private Integer id;
 
     private String username;
@@ -26,7 +29,13 @@ public class Account {
 
     private String email;
 
-    private Date registerTime;
+    private Date createdAt;
+
+    private Date updateAt;
+
+    private String avatarUrl;
+
+    private Boolean isDeleted;
 
     private List<Role> roles;
 }
