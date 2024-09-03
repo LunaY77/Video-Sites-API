@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
-public class FollowListVO {
-    private List<FollowInfoVO> items;
+public class ListVO<T> {
+    private List<T> items;
     private Long total;
 }

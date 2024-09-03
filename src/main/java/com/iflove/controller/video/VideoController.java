@@ -2,6 +2,8 @@ package com.iflove.controller.video;
 
 import com.iflove.entity.RestBean;
 import com.iflove.entity.vo.request.VideoPostVO;
+import com.iflove.entity.vo.response.ListVO;
+import com.iflove.entity.vo.response.VideoInfoVO;
 import com.iflove.service.AccountService;
 import com.iflove.service.VideosService;
 import com.iflove.utils.MessageHandler;
@@ -41,5 +43,21 @@ public class VideoController {
                 videosService.publish(new VideoPostVO(file, title, description), id));
     }
 
+    @GetMapping("list")
+    public RestBean<ListVO<VideoInfoVO>> listVideo(@RequestParam("user_id") String id,
+                                                   @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                                   @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+        return MessageHandler.messageHandle(() ->
+                videosService.listVideo(id, pageNum, pageSize));
+    }
 
+    @PostMapping("search")
+    public RestBean<ListVO<VideoInfoVO>> searchVideo(@RequestParam(value = "keywords", required = false) String keywords,
+                                                     @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                                     @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize,
+                                                     @RequestParam(value = "from_date", required = false) Integer fromDate,
+                                                     @RequestParam(value = "to_date", required = false) Integer toDate,
+                                                     @RequestParam(value = "username", required = false) String username) {
+
+    }
 }

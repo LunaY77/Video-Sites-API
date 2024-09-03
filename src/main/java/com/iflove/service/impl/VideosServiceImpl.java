@@ -1,8 +1,14 @@
 package com.iflove.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.iflove.entity.dto.Followers;
 import com.iflove.entity.dto.Videos;
 import com.iflove.entity.vo.request.VideoPostVO;
+import com.iflove.entity.vo.response.FollowInfoVO;
+import com.iflove.entity.vo.response.ListVO;
+import com.iflove.entity.vo.response.VideoInfoVO;
 import com.iflove.service.VideosService;
 import com.iflove.mapper.VideosMapper;
 import com.iflove.utils.FileUtil;
@@ -11,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -35,6 +42,25 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
             return "上传失败";
         }
         return null;
+    }
+
+    @Override
+    public ListVO<VideoInfoVO> listVideo(String sid, int pageNum, int pageSize) {
+        Long id = null;
+        try {
+            id = Long.valueOf(sid);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        Page<Videos> page = this.page(new Page<>(pageNum, pageSize), new QueryWrapper<Videos>().eq("author_id", id));
+
+        List<Videos> records = page.getRecords();
+        List<VideoInfoVO> items = records
+                .stream()
+                .map(videos -> videos.asViewObject(VideoInfoVO.class))
+                .toList();
+        Long total = page.getTotal();
+        return new ListVO<>(items, total);
     }
 }
 

@@ -1,12 +1,11 @@
 package com.iflove.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iflove.entity.dto.Followers;
 import com.iflove.entity.vo.response.FollowInfoVO;
-import com.iflove.entity.vo.response.FollowListVO;
+import com.iflove.entity.vo.response.ListVO;
 import com.iflove.service.AccountService;
 import com.iflove.service.FollowersService;
 import com.iflove.mapper.FollowersMapper;
@@ -69,7 +68,7 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
      * @return vo
      */
     @Override
-    public FollowListVO friendsList(Long id, Integer pageNum, Integer pageSize) {
+    public ListVO<FollowInfoVO> friendsList(Long id, Integer pageNum, Integer pageSize) {
         Page<Followers> page = followersMapper.friendsList(new Page<>(pageNum, pageSize), id);
 
         List<Followers> records = page.getRecords();
@@ -80,8 +79,9 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
                         .asViewObject(FollowInfoVO.class))
                 .toList();
         long total = page.getTotal();
-        return new FollowListVO(items, total);
+        return new ListVO<>(items, total);
     }
+
     /**
      * 分页查询粉丝列表
      * @param id id
@@ -90,7 +90,7 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
      * @return vo
      */
     @Override
-    public FollowListVO followerList(String id, Integer pageNum, Integer pageSize) {
+    public ListVO<FollowInfoVO> followerList(String id, Integer pageNum, Integer pageSize) {
         Long followerId = null;
         try {
             followerId = Long.valueOf(id);
@@ -108,7 +108,7 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
      * @return vo
      */
     @Override
-    public FollowListVO followingList(String id, Integer pageNum, Integer pageSize) {
+    public ListVO<FollowInfoVO> followingList(String id, Integer pageNum, Integer pageSize) {
         Long followingId = null;
         try {
             followingId = Long.valueOf(id);
@@ -126,7 +126,7 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
      * @param pageSize 大小
      * @return vo
      */
-    private FollowListVO followList(Long followerId, Long followingId, Integer pageNum, Integer pageSize) {
+    private ListVO<FollowInfoVO> followList(Long followerId, Long followingId, Integer pageNum, Integer pageSize) {
         Page<Followers> page = this.page(new Page<>(pageNum, pageSize),
                 new QueryWrapper<Followers>()
                         .eq(followerId != null, "follower_id", followerId)
@@ -141,7 +141,7 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
                         .asViewObject(FollowInfoVO.class))
                 .toList();
         long total = page.getTotal();
-        return new FollowListVO(items, total);
+        return new ListVO<>(items, total);
     }
 }
 

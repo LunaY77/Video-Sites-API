@@ -6,14 +6,20 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.iflove.entity.BaseData;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @TableName video_videos
  */
 @TableName(value ="video_videos")
 @Data
-public class Videos {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Videos implements BaseData {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 

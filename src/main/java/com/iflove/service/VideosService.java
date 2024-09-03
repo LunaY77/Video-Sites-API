@@ -3,6 +3,8 @@ package com.iflove.service;
 import com.iflove.entity.dto.Videos;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.iflove.entity.vo.request.VideoPostVO;
+import com.iflove.entity.vo.response.ListVO;
+import com.iflove.entity.vo.response.VideoInfoVO;
 
 /**
 * @author IFLOVE
@@ -11,4 +13,5 @@ import com.iflove.entity.vo.request.VideoPostVO;
 */
 public interface VideosService extends IService<Videos> {
     String publish(VideoPostVO vo, Long id);
+    ListVO<VideoInfoVO> listVideo(String id, int pageNum, int pageSize);
 }
