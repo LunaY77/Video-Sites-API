@@ -9,6 +9,7 @@ import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @TableName social_followers
@@ -16,6 +17,7 @@ import lombok.Data;
 @TableName(value ="social_followers")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Followers {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;

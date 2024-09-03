@@ -46,4 +46,13 @@ public class RelationController {
         return MessageHandler.messageHandle(() ->
                 followersService.followerList(id, pageNum, pageSize));
     }
+
+    @GetMapping("friends/list")
+    public RestBean<FollowListVO> friendsList(@RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                               @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = accountService.query().select("id").eq("username", username).eq("is_deleted", 0).one().getId();
+        return MessageHandler.messageHandle(() ->
+                followersService.friendsList(id, pageNum, pageSize));
+    }
 }

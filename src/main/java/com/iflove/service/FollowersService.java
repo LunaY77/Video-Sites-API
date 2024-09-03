@@ -13,4 +13,5 @@ public interface FollowersService extends IService<Followers> {
     String subscribe(Long fromId, String toId, Integer type);
     FollowListVO followerList(String id, Integer pageNum, Integer pageSize);
     FollowListVO followingList(String id, Integer pageNum, Integer pageSize);
+    FollowListVO friendsList(Long id, Integer pageNum, Integer pageSize);
 }

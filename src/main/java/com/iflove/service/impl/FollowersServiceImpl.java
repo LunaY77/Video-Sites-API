@@ -27,6 +27,8 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
 
     @Resource
     AccountService accountService;
+    @Resource
+    FollowersMapper followersMapper;
 
     /**
      * 关注或取消关注
@@ -59,6 +61,27 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
         return update ? null : "操作失败";
     }
 
+    /**
+     * 使用内连接查询朋友列表
+     * @param id 当前用户id
+     * @param pageNum 当前页
+     * @param pageSize 大小
+     * @return vo
+     */
+    @Override
+    public FollowListVO friendsList(Long id, Integer pageNum, Integer pageSize) {
+        Page<Followers> page = followersMapper.friendsList(new Page<>(pageNum, pageSize), id);
+
+        List<Followers> records = page.getRecords();
+        List<FollowInfoVO> items = records
+                .stream()
+                .map(follower -> accountService
+                        .getUserById(follower.getFollowingId())
+                        .asViewObject(FollowInfoVO.class))
+                .toList();
+        long total = page.getTotal();
+        return new FollowListVO(items, total);
+    }
     /**
      * 分页查询粉丝列表
      * @param id id
@@ -94,7 +117,6 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
         }
         return followList(followingId, null, pageNum, pageSize);
     }
-
 
     /**
      * 分页查询关注/粉丝列表
