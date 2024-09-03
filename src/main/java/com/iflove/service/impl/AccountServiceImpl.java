@@ -10,6 +10,7 @@ import com.iflove.entity.vo.request.EmailResetVO;
 import com.iflove.entity.vo.response.UserInfoVO;
 import com.iflove.mapper.AccountMapper;
 import com.iflove.service.AccountService;
+import com.iflove.utils.FileConfig;
 import com.iflove.utils.FileUtil;
 import com.iflove.utils.FlowUtil;
 import jakarta.annotation.Resource;
@@ -41,6 +42,9 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     PasswordEncoder passwordEncoder;
     @Resource
     private FileUtil fileUtil;
+    @Resource
+    private FileConfig fileConfig;
+
 
     /**
      * 根据username获得用户对象
@@ -141,6 +145,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Override
     public UserInfoVO saveUserAvatar(MultipartFile file, Long id) {
+        String contentType = file.getContentType();
+        // 检查文件格式是否正确
+        if (!fileConfig.getAllowPicTypes().contains(contentType)) {
+            return null;
+        }
         String path = fileUtil.saveFile(file);
         if (Objects.isNull(path)) return null;
         boolean update = this.update()

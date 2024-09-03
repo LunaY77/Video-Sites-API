@@ -33,4 +33,6 @@ public class CommentController {
         return MessageHandler.stringMessageHandle(() ->
                 commentService.publish(id, videoId, commentId, content));
     }
+
+
 }

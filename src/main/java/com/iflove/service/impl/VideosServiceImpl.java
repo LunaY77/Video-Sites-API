@@ -12,6 +12,7 @@ import com.iflove.entity.vo.response.VideoInfoVO;
 import com.iflove.service.AccountService;
 import com.iflove.service.VideosService;
 import com.iflove.mapper.VideosMapper;
+import com.iflove.utils.FileConfig;
 import com.iflove.utils.FileUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -35,9 +36,16 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
     VideosMapper videosMapper;
     @Resource
     AccountService accountService;
+    @Resource
+    FileConfig fileConfig;
 
     @Override
     public String publish(VideoPostVO vo, Long id) {
+        String contentType = vo.getFile().getContentType();
+        // 检查文件格式是否正确
+        if (!fileConfig.getAllowVideoTypes().contains(contentType)) {
+            return "文件格式错误";
+        }
         String path = fileUtil.saveFile(vo.getFile());
         if (Objects.isNull(path)) return "文件保存失败, 请检查文件类型";
         Videos video = new Videos(vo.getTitle(), vo.getDescription(), new Date(), new Date(), path, id);
@@ -94,6 +102,13 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
         Page<Videos> page = this.page(new Page<>(pageNum, pageSize), wrapper);
 
         return getListVO(page);
+    }
+
+    @Override
+    public Boolean addVideoComment(Long id) {
+        Integer commentCount = this.query().eq("id", id).one().getCommentCount();
+        if (commentCount != null) return this.update().eq("id", id).set("comment_count", commentCount + 1).update();
+        return false;
     }
 
     private ListVO<VideoInfoVO> getListVO(Page<Videos> page) {
