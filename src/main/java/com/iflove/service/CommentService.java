@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-09-02 08:16:25
 */
 public interface CommentService extends IService<Comment> {
-
+    String publish(Long id, String videoId, String commentId, String content);
 }

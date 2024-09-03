@@ -6,13 +6,18 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @TableName video_comment
  */
 @TableName(value ="video_comment")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
@@ -29,6 +34,16 @@ public class Comment {
 
     private Date updatedAt;
 
+    private Integer recommendCount;
+
     private Boolean isDeleted;
 
+    public Comment(Long videoId, Long parentId, String content, Long createdBy, Date createdAt, Date updatedAt) {
+        this.videoId = videoId;
+        this.parentId = parentId;
+        this.content = content;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

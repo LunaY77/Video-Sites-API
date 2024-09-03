@@ -13,6 +13,10 @@ public class Const {
     public static final String VERIFY_EMAIL_DATA = "verify:email:data";
     public static final String FLOW_LIMIT_COUNTER = "flow:counter:";
     public static final String FLOW_LIMIT_BLOCK = "flow:block:";
+    public static final String VIDEO_CLICK_COUNT = "videos:clickCount:";
+    public static final String VIDEO_RECOMMEND_COUNT = "videos:recommendCount:";
+    public static final String COMMENT_RECOMMEND_COUNT = "comment:recommendCount:";
+    public static final String VIDEO_USER_LIKED = "map:videoUserLiked:";
 
     //用于给Jwt令牌签名校验的秘钥
     public static final String JWT_SIGN_KEY = "1145141919810";

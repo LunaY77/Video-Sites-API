@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.iflove.entity.dto.Comment
 */
 public interface CommentMapper extends BaseMapper<Comment> {
-
 }
 
 

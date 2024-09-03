@@ -1,9 +1,11 @@
 package com.iflove.videositesapi;
 
+import com.iflove.entity.Const;
 import com.iflove.entity.dto.Followers;
 import com.iflove.mapper.FollowersMapper;
 import com.iflove.service.FollowersService;
 import com.iflove.utils.FileUtil;
+import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +63,15 @@ class VideoSitesApiApplicationTests {
         String s = null;
         Long l = Long.valueOf(s);
         System.out.println(l);
+    }
+
+    @Resource
+    RedisUtil redisUtil;
+
+    @Test
+    public void test3() {
+        Boolean b = redisUtil.zsIncr(Const.VIDEO_CLICK_COUNT, "1", 1);
+        System.out.println(b);
     }
 
 }

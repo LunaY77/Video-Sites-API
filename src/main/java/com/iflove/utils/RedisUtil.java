@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,4 +59,64 @@ public class RedisUtil {
         calendar.add(Calendar.HOUR, Const.EXPIRE_TIME);
         return calendar.getTime();
     }
+
+    /**
+     * zet增加操作
+     * @param key
+     * @param value  属性值
+     * @param map    具体分数
+     * @return
+     */
+    public Boolean zsAdd(String key, String value, HashMap<String, Object> map){
+        try {
+            template.opsForZSet().add(key, value, Double.parseDouble(map.get(key).toString()));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * zset给某个key某个属性增值操作
+     * @param key
+     * @param value  属性值
+     * @param delta  增加值
+     * @return
+     */
+    public Boolean zsIncr(String key, String value, Integer delta){
+        try {
+            template.opsForZSet().incrementScore(key, value, delta);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * zset逆向排序
+     * @param key
+     * @return
+     */
+    public Set<Object>  zsReverseRange(String key){
+        Set viewNum = template.opsForZSet().reverseRange(key,0,-1);
+
+        return viewNum;
+
+    }
+
+    /**
+     * zscore 返回属性值
+     * @param key  key值
+     * @param value 属性值
+     * @return
+     */
+    public Double zscore(String key,String value){
+        Double score = template.opsForZSet().score(key, value);
+        return score;
+    }
+
+
 }
