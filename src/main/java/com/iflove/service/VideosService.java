@@ -14,4 +14,5 @@ import com.iflove.entity.vo.response.VideoInfoVO;
 public interface VideosService extends IService<Videos> {
     String publish(VideoPostVO vo, Long id);
     ListVO<VideoInfoVO> listVideo(String id, int pageNum, int pageSize);
+    ListVO<VideoInfoVO> searchVideo(String keywords, Integer pageNum, Integer pageSize, Long fromDate, Long toDate, String username);
 }

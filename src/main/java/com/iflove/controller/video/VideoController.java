@@ -43,6 +43,13 @@ public class VideoController {
                 videosService.publish(new VideoPostVO(file, title, description), id));
     }
 
+    /**
+     * 根据id查询发布视频列表
+     * @param id 对象
+     * @param pageNum 当前页，默认0
+     * @param pageSize 大小，默认10
+     * @return 结果集
+     */
     @GetMapping("list")
     public RestBean<ListVO<VideoInfoVO>> listVideo(@RequestParam("user_id") String id,
                                                    @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
@@ -51,13 +58,26 @@ public class VideoController {
                 videosService.listVideo(id, pageNum, pageSize));
     }
 
+    /**
+     * 搜索视频
+     * @param keywords 关键字
+     * @param pageNum 当前页，默认0
+     * @param pageSize 大小，默认10
+     * @param fromDate 起始日期
+     * @param toDate 截止日期
+     * @param username 发布人
+     * @return 结果集
+     */
     @PostMapping("search")
     public RestBean<ListVO<VideoInfoVO>> searchVideo(@RequestParam(value = "keywords", required = false) String keywords,
                                                      @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
                                                      @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize,
-                                                     @RequestParam(value = "from_date", required = false) Integer fromDate,
-                                                     @RequestParam(value = "to_date", required = false) Integer toDate,
+                                                     @RequestParam(value = "from_date", required = false) Long fromDate,
+                                                     @RequestParam(value = "to_date", required = false) Long toDate,
                                                      @RequestParam(value = "username", required = false) String username) {
-
+        return MessageHandler.messageHandle(() ->
+                videosService.searchVideo(keywords, pageNum, pageSize, fromDate, toDate, username));
     }
+
+
 }

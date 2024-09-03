@@ -9,11 +9,13 @@ import com.iflove.entity.vo.request.VideoPostVO;
 import com.iflove.entity.vo.response.FollowInfoVO;
 import com.iflove.entity.vo.response.ListVO;
 import com.iflove.entity.vo.response.VideoInfoVO;
+import com.iflove.service.AccountService;
 import com.iflove.service.VideosService;
 import com.iflove.mapper.VideosMapper;
 import com.iflove.utils.FileUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.Date;
@@ -31,6 +33,8 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
     FileUtil fileUtil;
     @Resource
     VideosMapper videosMapper;
+    @Resource
+    AccountService accountService;
 
     @Override
     public String publish(VideoPostVO vo, Long id) {
@@ -54,6 +58,45 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
         }
         Page<Videos> page = this.page(new Page<>(pageNum, pageSize), new QueryWrapper<Videos>().eq("author_id", id));
 
+        return getListVO(page);
+    }
+
+    @Override
+    public ListVO<VideoInfoVO> searchVideo(String keywords, Integer pageNum, Integer pageSize, Long fromDate, Long toDate, String username) {
+        QueryWrapper<Videos> wrapper = new QueryWrapper<>();
+
+        // 将 timestamp 转换为 Date 对象，然后比较
+        if (fromDate != null && toDate != null) {
+            Date fromDateObj = new Date(fromDate);
+            Date toDateObj = new Date(toDate);
+            wrapper.between("created_at", fromDateObj, toDateObj);
+        } else if (fromDate != null) {
+            Date fromDateObj = new Date(fromDate);
+            wrapper.ge("created_at", fromDateObj);
+        } else if (toDate != null) {
+            Date toDateObj = new Date(toDate);
+            wrapper.le("created_at", toDateObj);
+        }
+
+        // 模糊查询
+        wrapper.and(w -> w
+                .like(!keywords.isBlank(), "title", keywords)
+                .or()
+                .like(!keywords.isBlank(), "description", keywords));
+
+        // username查询
+        if (!username.isBlank()) {
+            Long id = accountService.getUserByName(username).getId();
+            if (id == null) return null;
+            wrapper.and(w -> w.eq("author_id", id));
+        }
+
+        Page<Videos> page = this.page(new Page<>(pageNum, pageSize), wrapper);
+
+        return getListVO(page);
+    }
+
+    private ListVO<VideoInfoVO> getListVO(Page<Videos> page) {
         List<Videos> records = page.getRecords();
         List<VideoInfoVO> items = records
                 .stream()
