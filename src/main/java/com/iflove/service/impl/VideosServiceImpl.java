@@ -105,9 +105,9 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
     }
 
     @Override
-    public Boolean addVideoComment(Long id) {
+    public Boolean addVideoComment(Long id, long incr) {
         Integer commentCount = this.query().eq("id", id).one().getCommentCount();
-        if (commentCount != null) return this.update().eq("id", id).set("comment_count", commentCount + 1).update();
+        if (commentCount != null) return this.update().eq("id", id).set("comment_count", commentCount + incr).update();
         return false;
     }
 

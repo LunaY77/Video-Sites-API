@@ -13,4 +13,5 @@ import com.iflove.entity.vo.response.ListVO;
 public interface CommentService extends IService<Comment> {
     String publish(Long id, String videoId, String commentId, String content);
     ListVO<CommentInfoVO> listComment(String videoSid, String commentSid, Integer pageNum, Integer pageSize);
+    String delete(String videoId, String commentId);
 }
