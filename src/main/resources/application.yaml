@@ -30,3 +30,6 @@ file:
       - video/x-ms-wmv
       - video/mpeg
       - video/3gpp
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

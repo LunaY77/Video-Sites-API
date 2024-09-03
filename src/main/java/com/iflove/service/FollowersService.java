@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-09-02 08:18:18
 */
 public interface FollowersService extends IService<Followers> {
-
+    String subscribe(Long fromId, Long toId, Integer type);
 }

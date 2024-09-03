@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -13,6 +15,7 @@ import lombok.Data;
  */
 @TableName(value ="social_followers")
 @Data
+@AllArgsConstructor
 public class Followers {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
@@ -22,4 +25,13 @@ public class Followers {
     private Long followingId;
 
     private Date followTime;
+
+    private Integer status;
+
+    public Followers(Long followerId, Long followingId, Date followTime, Integer status) {
+        this.followerId = followerId;
+        this.followingId = followingId;
+        this.followTime = followTime;
+        this.status = status;
+    }
 }

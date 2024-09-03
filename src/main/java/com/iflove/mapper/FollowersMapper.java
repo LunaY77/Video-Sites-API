@@ -2,6 +2,11 @@ package com.iflove.mapper;
 
 import com.iflove.entity.dto.Followers;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.Date;
 
 /**
 * @author IFLOVE
@@ -10,7 +15,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.iflove.entity.dto.Followers
 */
 public interface FollowersMapper extends BaseMapper<Followers> {
-
 }
 
 

@@ -8,7 +8,7 @@ package com.iflove.entity;
  */
 public record RestBean<T> (int code, T data, String message) {
 
-    public static <T> RestBean<T> build(T body, ResultCodeEnum resultCodeEnum) {
+    private static <T> RestBean<T> build(T body, ResultCodeEnum resultCodeEnum) {
         return new RestBean<>(resultCodeEnum.getCode(), body, resultCodeEnum.getMessage());
     }
 

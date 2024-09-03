@@ -1,6 +1,10 @@
 package com.iflove.videositesapi;
 
+import com.iflove.entity.dto.Followers;
+import com.iflove.mapper.FollowersMapper;
+import com.iflove.service.FollowersService;
 import com.iflove.utils.FileUtil;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +55,7 @@ class VideoSitesApiApplicationTests {
         // 清理测试文件
          savedFile.delete();
     }
+
+
+
 }
