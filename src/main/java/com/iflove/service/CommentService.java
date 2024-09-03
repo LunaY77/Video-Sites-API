@@ -2,6 +2,8 @@ package com.iflove.service;
 
 import com.iflove.entity.dto.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.iflove.entity.vo.response.CommentInfoVO;
+import com.iflove.entity.vo.response.ListVO;
 
 /**
 * @author IFLOVE
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface CommentService extends IService<Comment> {
     String publish(Long id, String videoId, String commentId, String content);
+    ListVO<CommentInfoVO> listComment(String videoSid, String commentSid, Integer pageNum, Integer pageSize);
 }

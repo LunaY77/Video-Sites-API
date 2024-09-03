@@ -1,15 +1,14 @@
 package com.iflove.controller.interactive;
 
 import com.iflove.entity.RestBean;
+import com.iflove.entity.vo.response.CommentInfoVO;
+import com.iflove.entity.vo.response.ListVO;
 import com.iflove.service.AccountService;
 import com.iflove.service.CommentService;
 import com.iflove.utils.MessageHandler;
 import jakarta.annotation.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author 苍镜月
@@ -34,5 +33,12 @@ public class CommentController {
                 commentService.publish(id, videoId, commentId, content));
     }
 
-
+    @GetMapping("list")
+    public RestBean<ListVO<CommentInfoVO>> listComment(@RequestParam(value = "video_id", required = false) String videoId,
+                                                       @RequestParam(value = "comment_id", required = false) String commentId,
+                                                       @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                                       @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+        return MessageHandler.messageHandle(() ->
+                commentService.listComment(videoId, commentId, pageNum, pageSize));
+    }
 }
