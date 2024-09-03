@@ -52,9 +52,19 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         return accountMapper.getUserByName(username);
     }
 
+    public Account getUserById(Long id) {
+        return accountMapper.getUserById(id);
+    }
+
     @Override
-    public UserInfoVO getUserInfoById(Long id) {
-        return accountMapper.getUserById(id).asViewObject(UserInfoVO.class);
+    public UserInfoVO getUserInfoById(String s) {
+        Long id = 0L;
+        try {
+            id = Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return this.getUserById(id).asViewObject(UserInfoVO.class);
     }
 
     /**
@@ -138,7 +148,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
                 .set("avatar_url", path)
                 .set("update_at", new Date())
                 .update();
-        if (update) return this.getUserInfoById(id);
+        if (update) return this.getUserById(id).asViewObject(UserInfoVO.class);
         else {
             new File(path).delete();
             return null;

@@ -15,7 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 */
 public interface AccountService extends IService<Account> {
     Account getUserByName(String username);
-    UserInfoVO getUserInfoById(Long id);
+    Account getUserById(Long id);
+    UserInfoVO getUserInfoById(String id);
     String registerEmailVerifyCode(String type, String email, String ip);
     String registerEmailAccount(EmailRegisterVO vo);
     String resetConfirm(ConfirmResetVO vo);

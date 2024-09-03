@@ -33,7 +33,7 @@ public class UserController {
      */
     @GetMapping("info")
     public RestBean<UserInfoVO> getUserInfo(@RequestParam("id") String id) {
-        return MessageHandler.messageHandle(Long.valueOf(id), accountService::getUserInfoById);
+        return MessageHandler.messageHandle(id, accountService::getUserInfoById);
     }
 
     /**
