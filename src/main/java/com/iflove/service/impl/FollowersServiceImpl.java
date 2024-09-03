@@ -1,24 +1,21 @@
 package com.iflove.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iflove.entity.dto.Account;
 import com.iflove.entity.dto.Followers;
-import com.iflove.entity.vo.response.FollowingInfoVO;
-import com.iflove.entity.vo.response.FollowingListVO;
+import com.iflove.entity.vo.response.FollowInfoVO;
+import com.iflove.entity.vo.response.FollowListVO;
 import com.iflove.service.AccountService;
 import com.iflove.service.FollowersService;
 import com.iflove.mapper.FollowersMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
 * @author IFLOVE
@@ -28,8 +25,6 @@ import java.util.stream.Collectors;
 @Service
 public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers> implements FollowersService{
 
-    @Resource
-    FollowersMapper mapper;
     @Resource
     AccountService accountService;
 
@@ -65,37 +60,67 @@ public class FollowersServiceImpl extends ServiceImpl<FollowersMapper, Followers
     }
 
     /**
-     * 分页查询关注列表
-     * @param s id
+     * 分页查询粉丝列表
+     * @param id id
      * @param pageNum 当前页
      * @param pageSize 大小
      * @return vo
      */
     @Override
-    public FollowingListVO followingList(String s, Integer pageNum, Integer pageSize) {
-        long id = 0L;
+    public FollowListVO followerList(String id, Integer pageNum, Integer pageSize) {
+        Long followerId = null;
         try {
-            id = Long.parseLong(s);
+            followerId = Long.valueOf(id);
         } catch (NumberFormatException e) {
             return null;
         }
-        Page<Followers> page = this.page(new Page<>(pageNum, pageSize),
-                new QueryWrapper<Followers>()
-                        .eq("follower_id", id)
-                        .eq("status", 1));
+        return followList(null, followerId, pageNum, pageSize);
+    }
 
-        List<Followers> records = page.getRecords();
-        List<FollowingInfoVO> items = records
-                .stream()
-                .map(follower -> accountService
-                        .getUserById(follower.getFollowingId())
-                        .asViewObject(FollowingInfoVO.class))
-                .toList();
-        long total = page.getTotal();
-        return new FollowingListVO(items, total);
+    /**
+     * 分页查询关注列表
+     * @param id id
+     * @param pageNum 当前页
+     * @param pageSize 大小
+     * @return vo
+     */
+    @Override
+    public FollowListVO followingList(String id, Integer pageNum, Integer pageSize) {
+        Long followingId = null;
+        try {
+            followingId = Long.valueOf(id);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return followList(followingId, null, pageNum, pageSize);
     }
 
 
+    /**
+     * 分页查询关注/粉丝列表
+     * @param followerId 粉丝id
+     * @param followingId up主id
+     * @param pageNum 当前页
+     * @param pageSize 大小
+     * @return vo
+     */
+    private FollowListVO followList(Long followerId, Long followingId, Integer pageNum, Integer pageSize) {
+        Page<Followers> page = this.page(new Page<>(pageNum, pageSize),
+                new QueryWrapper<Followers>()
+                        .eq(followerId != null, "follower_id", followerId)
+                        .eq(followingId != null, "following_id", followingId)
+                        .eq("status", 1));
+
+        List<Followers> records = page.getRecords();
+        List<FollowInfoVO> items = records
+                .stream()
+                .map(follower -> accountService
+                        .getUserById(Objects.nonNull(followerId) ? follower.getFollowingId() : follower.getFollowerId())
+                        .asViewObject(FollowInfoVO.class))
+                .toList();
+        long total = page.getTotal();
+        return new FollowListVO(items, total);
+    }
 }
 
 

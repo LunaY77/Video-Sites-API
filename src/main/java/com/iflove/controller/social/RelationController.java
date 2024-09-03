@@ -1,16 +1,13 @@
 package com.iflove.controller.social;
 
 import com.iflove.entity.RestBean;
-import com.iflove.entity.vo.response.FollowingListVO;
+import com.iflove.entity.vo.response.FollowListVO;
 import com.iflove.service.AccountService;
 import com.iflove.service.FollowersService;
 import com.iflove.utils.MessageHandler;
 import jakarta.annotation.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.management.relation.RelationService;
-import java.util.Optional;
 
 /**
  * @author 苍镜月
@@ -34,11 +31,19 @@ public class RelationController {
                 followersService.subscribe(fromId, toId, type));
     }
 
-    @GetMapping("list")
-    public RestBean<FollowingListVO> list(@RequestParam("user_id") String id,
-                                          @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
-                                          @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+    @GetMapping("following/list")
+    public RestBean<FollowListVO> followingList(@RequestParam("user_id") String id,
+                                                @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                                @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
         return MessageHandler.messageHandle(() ->
                 followersService.followingList(id, pageNum, pageSize));
+    }
+
+    @GetMapping("follower/list")
+    public RestBean<FollowListVO> followerList(@RequestParam("user_id") String id,
+                                               @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                               @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+        return MessageHandler.messageHandle(() ->
+                followersService.followerList(id, pageNum, pageSize));
     }
 }

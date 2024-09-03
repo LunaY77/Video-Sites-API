@@ -2,7 +2,7 @@ package com.iflove.service;
 
 import com.iflove.entity.dto.Followers;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflove.entity.vo.response.FollowingListVO;
+import com.iflove.entity.vo.response.FollowListVO;
 
 /**
 * @author IFLOVE
@@ -11,5 +11,6 @@ import com.iflove.entity.vo.response.FollowingListVO;
 */
 public interface FollowersService extends IService<Followers> {
     String subscribe(Long fromId, String toId, Integer type);
-    FollowingListVO followingList(String id, Integer pageNum, Integer pageSize);
+    FollowListVO followerList(String id, Integer pageNum, Integer pageSize);
+    FollowListVO followingList(String id, Integer pageNum, Integer pageSize);
 }

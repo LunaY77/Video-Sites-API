@@ -8,7 +8,7 @@ import lombok.Data;
  * @implNote
  */
 @Data
-public class FollowingInfoVO {
+public class FollowInfoVO {
     private Long id;
     private String username;
     private String avatarUrl;
