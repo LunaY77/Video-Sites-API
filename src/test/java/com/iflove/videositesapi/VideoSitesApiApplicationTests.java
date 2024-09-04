@@ -69,11 +69,6 @@ class VideoSitesApiApplicationTests {
     @Resource
     RedisUtil redisUtil;
 
-    @Test
-    public void test3() {
-        Boolean b = redisUtil.zsIncr(Const.VIDEO_CLICK_COUNT, "1", 1);
-        System.out.println(b);
-    }
 
 
 

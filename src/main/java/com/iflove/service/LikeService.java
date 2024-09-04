@@ -6,7 +6,7 @@ package com.iflove.service;
  * @implNote
  */
 public interface LikeService {
-    String action(String videoSid, String commentSid, Integer actionType);
+    String action(String userId, String videoSid, String commentSid, Integer actionType);
     void transLikeFromRedis2DB();
     void transVideoLikeCountFromRedis2DB();
     void transCommentLikeCountFromRedis2DB();

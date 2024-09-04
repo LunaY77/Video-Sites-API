@@ -5,10 +5,8 @@ import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.security.Key;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,30 +59,12 @@ public class RedisUtil {
     }
 
     /**
-     * zet增加操作
-     * @param key
-     * @param value  属性值
-     * @param map    具体分数
-     * @return
-     */
-    public Boolean zsAdd(String key, String value, HashMap<String, Object> map){
-        try {
-            template.opsForZSet().add(key, value, Double.parseDouble(map.get(key).toString()));
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * zset给某个key某个属性增值操作
-     * @param key
+     * zset存储点击量，点赞量
+     * @param key key
      * @param value  属性值
      * @param delta  增加值
-     * @return
      */
-    public Boolean zsIncr(String key, String value, Integer delta){
+    public void zsIncr(String key, String value, Integer delta){
         try {
             // 按照积分排序，如果积分相同，按照更新时间排序, 新加入的更大, score = 积分 + 时间戳 / 1e13
             // 查询是否已有值，有则更新，无则添加
@@ -98,36 +78,43 @@ public class RedisUtil {
             // 更新时间戳
             score += System.currentTimeMillis() / 1e13;
             template.opsForZSet().incrementScore(key, value, score);
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 
     /**
-     * zset逆向排序
-     * @param key key
-     * @return set
+     * 拼接用户id和被点赞的视频id作为key。格式 222222::333333
+     * @param userId 用户id
+     * @param videoId 视频id
+     * @return key
      */
-    public Set<Object> zsReverseRange(String key){
-        Set viewNum = template.opsForZSet().reverseRange(key,0,-1);
-
-        return viewNum;
-
+    private String mapId2Key(String userId, String videoId) {
+        return userId + "::" + videoId;
     }
 
     /**
-     * zscore 返回属性值
-     * @param key  key值
-     * @param value 属性值
-     * @return
+     * 根据key和hashkey查找是否点赞(1 点赞 / null & 0 未点赞)
+     * @param key key
+     * @param userId 用户id
+     * @param videoId 视频id
+     * @return 是否点赞(1 点赞 / 0 未点赞)
      */
-    public Double zscore(String key, String value){
-        Double score = template.opsForZSet().score(key, value);
-        return score;
+    public int hGetLike(String key, String userId, String videoId) {
+        Object o = template.opsForHash().get(key, this.mapId2Key(userId, videoId));
+        if (o == null) return 0;
+        return Integer.parseInt((String) o);
     }
 
-
+    /**
+     * 用户点赞/取消点赞视频
+     * @param key key
+     * @param userId 用户id
+     * @param videoId 视频id
+     * @param actionType 0 取消点赞/ 1 点赞
+     */
+    public void hSaveLike(String key, String userId, String videoId, int actionType) {
+        template.opsForHash().put(key, this.mapId2Key(userId, videoId), String.valueOf(actionType));
+    }
 
 }
