@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -72,8 +74,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(conf -> conf
                         // 对登录注册允许匿名访问
                         .requestMatchers("/api/user/auth/**").permitAll()
-                        // 测试
-                        .requestMatchers("/test").permitAll()
                         // 接口文档
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 除上面外的所有请求全部需要鉴权认证

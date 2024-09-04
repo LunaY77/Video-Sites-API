@@ -75,7 +75,6 @@ public class RedisUtil {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
@@ -87,7 +86,18 @@ public class RedisUtil {
      */
     public Boolean zsIncr(String key, String value, Integer delta){
         try {
-            template.opsForZSet().incrementScore(key, value, delta);
+            // 按照积分排序，如果积分相同，按照更新时间排序, 新加入的更大, score = 积分 + 时间戳 / 1e13
+            // 查询是否已有值，有则更新，无则添加
+            Double existValue = template.opsForZSet().score(key, value);
+            double score = delta; // 整数数值
+            if (existValue != null) {
+                // 存在，需要删除
+                template.opsForZSet().remove(key, value);
+                score += existValue.intValue();
+            }
+            // 更新时间戳
+            score += System.currentTimeMillis() / 1e13;
+            template.opsForZSet().incrementScore(key, value, score);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,10 +107,10 @@ public class RedisUtil {
 
     /**
      * zset逆向排序
-     * @param key
-     * @return
+     * @param key key
+     * @return set
      */
-    public Set<Object>  zsReverseRange(String key){
+    public Set<Object> zsReverseRange(String key){
         Set viewNum = template.opsForZSet().reverseRange(key,0,-1);
 
         return viewNum;
@@ -113,10 +123,11 @@ public class RedisUtil {
      * @param value 属性值
      * @return
      */
-    public Double zscore(String key,String value){
+    public Double zscore(String key, String value){
         Double score = template.opsForZSet().score(key, value);
         return score;
     }
+
 
 
 }

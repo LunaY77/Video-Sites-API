@@ -16,4 +16,5 @@ public interface VideosService extends IService<Videos> {
     ListVO<VideoInfoVO> listVideo(String id, int pageNum, int pageSize);
     ListVO<VideoInfoVO> searchVideo(String keywords, Integer pageNum, Integer pageSize, Long fromDate, Long toDate, String username);
     Boolean addVideoComment(Long id, long incr);
+    VideoInfoVO browse(String id);
 }

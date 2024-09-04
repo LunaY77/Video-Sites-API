@@ -3,6 +3,7 @@ package com.iflove.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.iflove.entity.Const;
 import com.iflove.entity.dto.Followers;
 import com.iflove.entity.dto.Videos;
 import com.iflove.entity.vo.request.VideoPostVO;
@@ -14,6 +15,7 @@ import com.iflove.service.VideosService;
 import com.iflove.mapper.VideosMapper;
 import com.iflove.utils.FileConfig;
 import com.iflove.utils.FileUtil;
+import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,6 +40,8 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
     AccountService accountService;
     @Resource
     FileConfig fileConfig;
+    @Resource
+    RedisUtil redisUtil;
 
     @Override
     public String publish(VideoPostVO vo, Long id) {
@@ -109,6 +113,25 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
         Integer commentCount = this.query().eq("id", id).one().getCommentCount();
         if (commentCount != null) return this.update().eq("id", id).set("comment_count", commentCount + incr).update();
         return false;
+    }
+
+    /**
+     *
+     * @param sid
+     * @return
+     */
+    @Override
+    public VideoInfoVO browse(String sid) {
+        Long id = null;
+        try {
+            id = Long.valueOf(sid);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        Videos video = this.query().eq("id", id).eq("is_deleted", 0).one();
+        if (video == null) return null;
+        redisUtil.zsIncr(Const.VIDEO_CLICK_COUNT, sid, 1); // 增加点击量
+        return video.asViewObject(VideoInfoVO.class);
     }
 
     private ListVO<VideoInfoVO> getListVO(Page<Videos> page) {

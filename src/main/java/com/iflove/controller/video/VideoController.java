@@ -80,4 +80,13 @@ public class VideoController {
     }
 
 
+    /**
+     * 浏览视频，增加点击量
+     * @param id id
+     * @return 结果集
+     */
+    @GetMapping("browse")
+    public RestBean<VideoInfoVO> browse(@RequestParam("video_id") String id) {
+            return MessageHandler.messageHandle(id, videosService::browse);
+    }
 }

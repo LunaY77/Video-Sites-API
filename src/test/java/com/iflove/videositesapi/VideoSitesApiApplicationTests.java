@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,6 +73,18 @@ class VideoSitesApiApplicationTests {
     public void test3() {
         Boolean b = redisUtil.zsIncr(Const.VIDEO_CLICK_COUNT, "1", 1);
         System.out.println(b);
+    }
+
+
+
+
+    @Resource
+    RedisTemplate redisTemplate;
+
+    @Test
+    public void test5() {
+        Double score = redisTemplate.opsForZSet().score(Const.VIDEO_CLICK_COUNT, 1);
+        System.out.println(score);
     }
 
 }

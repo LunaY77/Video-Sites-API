@@ -36,24 +36,4 @@ public class UserDetailsImpl implements UserDetails {
     public String getUsername() {
         return user.getUsername();
     }
-
-    public String getEmail() {
-        return user.getEmail();
-    }
-
-    public Long getId() {
-        return user.getId();
-    }
-
-    public Date getCreatedAt() {
-        return user.getCreatedAt();
-    }
-
-    public Date getUpdateAt() {
-        return user.getUpdateAt();
-    }
-
-    public String getAvatarUrl() {
-        return user.getAvatarUrl();
-    }
 }
