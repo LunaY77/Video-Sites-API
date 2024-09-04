@@ -74,8 +74,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(conf -> conf
                         // 对登录注册允许匿名访问
                         .requestMatchers("/api/user/auth/**").permitAll()
-                        // 接口文档
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 除上面外的所有请求全部需要鉴权认证
                         .anyRequest().authenticated()
                 )
