@@ -3,7 +3,6 @@ package com.iflove.utils;
 import com.iflove.entity.Const;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -60,12 +59,11 @@ public class RedisUtil {
 
     /**
      * zset逆向排序
-     * 注意：返回值的value携带时间戳，需去掉
      * @param key key
      * @return 通过索引区间返回有序集合成指定区间内的成员对象，其中有序集成员按分数值递减(从大到小)顺序排列
      */
-    public Set<ZSetOperations.TypedTuple<String>> zsreverseRangeWithScores(String key){
-        return template.opsForZSet().reverseRangeWithScores(key, 0, -1);
+    public Set<String> zsreverseRangeWithScores(String key){
+        return template.opsForZSet().reverseRange(key, 0, -1);
     }
 
     /**

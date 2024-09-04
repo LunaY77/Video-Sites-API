@@ -79,7 +79,6 @@ public class VideoController {
                 videosService.searchVideo(keywords, pageNum, pageSize, fromDate, toDate, username));
     }
 
-
     /**
      * 浏览视频，增加点击量
      * @param id id
@@ -87,6 +86,32 @@ public class VideoController {
      */
     @GetMapping("browse")
     public RestBean<VideoInfoVO> browse(@RequestParam("video_id") String id) {
-            return MessageHandler.messageHandle(id, videosService::browse);
+        return MessageHandler.messageHandle(id, videosService::browse);
+    }
+
+    /**
+     * 根据点击量降序排序
+     * @param pageNum 页码
+     * @param pageSize 大小
+     * @return 结果集
+     */
+    @GetMapping("clickRank")
+    public RestBean<ListVO<VideoInfoVO>> clickRank( @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                                  @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+        return MessageHandler.messageHandle(() ->
+                videosService.popular(pageNum, pageSize, true));
+    }
+
+    /**
+     * 根据点赞量降序排序
+     * @param pageNum 页码
+     * @param pageSize 大小
+     * @return 结果集
+     */
+    @GetMapping("recommendRank")
+    public RestBean<ListVO<VideoInfoVO>> recommendRank( @RequestParam(value = "page_num", required = false, defaultValue = "0") Integer pageNum,
+                                                    @RequestParam(value = "page_size", required = false, defaultValue = "10") Integer pageSize) {
+        return MessageHandler.messageHandle(() ->
+                videosService.popular(pageNum, pageSize, false));
     }
 }

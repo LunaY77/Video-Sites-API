@@ -17,13 +17,12 @@ import com.iflove.utils.FileConfig;
 import com.iflove.utils.FileUtil;
 import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
 * @author IFLOVE
@@ -132,6 +131,40 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
         if (video == null) return null;
         redisUtil.zsIncr(Const.VIDEO_CLICK_COUNT, sid, 1); // 增加点击量
         return video.asViewObject(VideoInfoVO.class);
+    }
+
+    /**
+     * 根据排序对象降序排序
+     * @param pageNum 页码
+     * @param pageSize 大小
+     * @param type 类型 true 点击量 / false 点赞量
+     * @return 结果集
+     */
+    @Override
+    public ListVO<VideoInfoVO> popular(int pageNum, int pageSize, boolean type) {
+        Set<String> set;
+        if (type) set = redisUtil.zsreverseRangeWithScores(Const.VIDEO_CLICK_COUNT);
+        else set = redisUtil.zsreverseRangeWithScores(Const.VIDEO_RECOMMEND_COUNT);
+        int start = pageNum * pageSize;
+        int end = start + pageSize;
+        int i = 0;
+        List<VideoInfoVO> items = new ArrayList<>();
+        for (String videoId : set) {
+            if (i < start) continue;
+            if (i >= set.size() || i >= end) break;
+            items.add(
+                    this
+                            .query()
+                            .eq("id", videoId)
+                            .eq("is_deleted", 0)
+                            .one()
+                            .asViewObject(VideoInfoVO.class, v -> {
+                                v.setClickCount(redisUtil.zsScore(Const.VIDEO_CLICK_COUNT, videoId));
+                                v.setRecommendCount(redisUtil.zsScore(Const.VIDEO_RECOMMEND_COUNT, videoId));
+                            }));
+            i++;
+        }
+        return new ListVO<>(items, (long) set.size());
     }
 
     private ListVO<VideoInfoVO> getListVO(Page<Videos> page) {
