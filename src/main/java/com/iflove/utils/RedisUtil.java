@@ -3,9 +3,9 @@ package com.iflove.utils;
 import com.iflove.entity.Const;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -59,6 +59,16 @@ public class RedisUtil {
     }
 
     /**
+     * zset逆向排序
+     * 注意：返回值的value携带时间戳，需去掉
+     * @param key key
+     * @return 通过索引区间返回有序集合成指定区间内的成员对象，其中有序集成员按分数值递减(从大到小)顺序排列
+     */
+    public Set<ZSetOperations.TypedTuple<String>> zsreverseRangeWithScores(String key){
+        return template.opsForZSet().reverseRangeWithScores(key, 0, -1);
+    }
+
+    /**
      * zset存储点击量，点赞量
      * @param key key
      * @param value  属性值
@@ -81,6 +91,18 @@ public class RedisUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 返回对应的score
+     * 注意：template返回值的value携带时间戳，需去掉
+     * @param key key
+     * @param value value
+     * @return score
+     */
+    public int zsScore(String key, String value) {
+        Double score = template.opsForZSet().score(key, value);
+        return score != null ? score.intValue() : 0;
     }
 
     /**
@@ -115,6 +137,26 @@ public class RedisUtil {
      */
     public void hSaveLike(String key, String userId, String videoId, int actionType) {
         template.opsForHash().put(key, this.mapId2Key(userId, videoId), String.valueOf(actionType));
+    }
+
+    /**
+     * 获得用户的点赞列表
+     * @param key key
+     * @param userId 用户id
+     * @return 点赞列表（videoId）
+     */
+    public List<Long> hGetLikeList(String key, String userId) {
+        Map<Object, Object> entries = template.opsForHash().entries(key);
+        List<Long> result = new ArrayList<>();
+        entries.forEach((k, v) -> {
+            String sk = String.valueOf(k);
+            int iv = Integer.parseInt((String) v);
+            // 如果是该用户，且点赞了视频
+            if (Objects.equals(sk.split("::")[0], userId) && iv == 1) {
+                result.add(Long.valueOf(sk.split("::")[1]));
+            }
+        });
+        return result;
     }
 
 }
