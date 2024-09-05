@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-09-04 16:54:29
 */
 public interface LikesCommentService extends IService<LikesComment> {
-
+    void deleteAll();
 }

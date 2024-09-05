@@ -13,6 +13,7 @@ import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -111,6 +112,7 @@ public class LikeServiceImpl implements LikeService {
     /**
      * 持久化存储 点赞关系
      */
+    @Transactional
     @Override
     public void transLikeFromRedis2DB() {
         // 获得redis缓存的点赞关系
@@ -141,6 +143,7 @@ public class LikeServiceImpl implements LikeService {
     /**
      * 持久化存储 点赞量，点击量
      */
+    @Transactional
     @Override
     public void transCountValueFromRedis2DB() {
         // 处理 视频 点赞量
@@ -160,12 +163,71 @@ public class LikeServiceImpl implements LikeService {
             String value = s.getValue();
             Double score = s.getScore();
             int count = score.intValue();
-            Timestamp update = new Timestamp((long) ((score - count) * 1e13));
+            long updatedAt = (long) ((score - count) * 1e13);
+            Timestamp update = updatedAt == 0 ? null : new Timestamp(updatedAt);
             CountParams countParams = new CountParams(Long.parseLong(value), new Date(), count, update);
             T result = mapper.apply(countParams);
             lst.add(result);
         });
         service.accept(lst);
+    }
+
+    /**
+     * 从 mysql 读取 点赞关系 到 redis
+     */
+    @Transactional
+    @Override
+    public void transLikeFromDB2Redis() {
+        // 读取 用户 - 视频 点赞关系
+        List<LikesVideo> likesVideoList = likesVideoService.list();
+        likesVideoList.forEach(v -> {
+            redisUtil.hSaveLike(Const.VIDEO_USER_LIKED, String.valueOf(v.getUserId()), String.valueOf(v.getVideoId()), 1);
+        });
+        // 读取结束，清空数据库
+        likesVideoService.deleteAll();
+
+        // 读取 用户 - 评论 点赞关系
+        List<LikesComment> likesCommentList = likesCommentService.list();
+        likesCommentList.forEach(v -> {
+            redisUtil.hSaveLike(Const.COMMENT_USER_LIKED, String.valueOf(v.getUserId()), String.valueOf(v.getCommentId()), 1);
+        });
+        // 读取结束，清空数据库
+        likesCommentService.deleteAll();
+    }
+
+    /**
+     * 从 mysql 读取 点击量，点赞量 到 redis
+     */
+    @Transactional
+    @Override
+    public void transCountValueFromDB2Redis() {
+        // 读取 视频 点击量 点赞量
+        List<Videos> videosList = videosService.list();
+        videosList.forEach(v -> {
+            String videoId = String.valueOf(v.getId());
+            Integer clickCount = v.getClickCount();
+            Integer recommendCount = v.getRecommendCount();
+            Timestamp clickUpdatedAt = v.getClickUpdatedAt();
+            Timestamp recommendUpdatedAt = v.getRecommendUpdatedAt();
+            // 获得 分数（带时间戳）
+            Double clickScore = clickCount + ((clickUpdatedAt != null ? clickUpdatedAt.getTime() : 0) / 1e13);
+            Double recommendScore = recommendCount + ((recommendUpdatedAt != null ? recommendUpdatedAt.getTime() : 0) / 1e13);
+            // 存入 redis
+            redisUtil.zsAdd(Const.VIDEO_CLICK_COUNT, videoId, clickScore);
+            redisUtil.zsAdd(Const.VIDEO_RECOMMEND_COUNT, videoId, recommendScore);
+        });
+
+        // 读取 评论 点赞量
+        List<Comment> comments = commentService.list();
+        comments.forEach(v -> {
+            String commentId = String.valueOf(v.getId());
+            Integer recommendCount = v.getRecommendCount();
+            Timestamp recommendUpdatedAt = v.getRecommendUpdatedAt();
+            // 获得分数
+            Double score = recommendCount + ((recommendUpdatedAt != null ? recommendUpdatedAt.getTime() : 0) / 1e13);
+            // 存入redis
+            redisUtil.zsAdd(Const.COMMENT_RECOMMEND_COUNT, commentId, score);
+        });
     }
 }
 

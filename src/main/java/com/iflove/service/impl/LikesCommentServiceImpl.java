@@ -1,9 +1,11 @@
 package com.iflove.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iflove.entity.dto.LikesComment;
 import com.iflove.service.LikesCommentService;
 import com.iflove.mapper.LikesCommentMapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,7 +16,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class LikesCommentServiceImpl extends ServiceImpl<LikesCommentMapper, LikesComment>
     implements LikesCommentService{
-
+    @Resource
+    LikesCommentMapper mapper;
+    @Override
+    public void deleteAll() {
+        mapper.delete(new QueryWrapper<>());
+    }
 }
 
 

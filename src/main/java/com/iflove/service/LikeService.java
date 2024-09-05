@@ -13,4 +13,6 @@ public interface LikeService {
     ListVO<VideoInfoVO> likeList(String userId, int pageNum, int pageSize);
     void transLikeFromRedis2DB();
     void transCountValueFromRedis2DB();
+    void transLikeFromDB2Redis();
+    void transCountValueFromDB2Redis();
 }

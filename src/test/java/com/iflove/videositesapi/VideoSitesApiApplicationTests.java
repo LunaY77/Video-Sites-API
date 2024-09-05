@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -87,9 +88,11 @@ class VideoSitesApiApplicationTests {
     LikeService likeService;
 
     @Test
+    @Transactional
     public void test6() {
         likeService.transLikeFromRedis2DB();
         likeService.transCountValueFromRedis2DB();
         System.out.println("存储成功");
+
     }
 }

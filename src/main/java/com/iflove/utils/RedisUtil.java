@@ -2,6 +2,7 @@ package com.iflove.utils;
 
 import com.iflove.entity.Const;
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,13 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
     @Resource
     private StringRedisTemplate template;
+
+    /**
+     * 清空全部缓存
+     */
+    public void flushAll() {
+        template.getConnectionFactory().getConnection().flushAll();
+    }
 
     /**
      * 将 Token 列入 Redis 白名单
@@ -74,6 +82,17 @@ public class RedisUtil {
      */
     public Set<ZSetOperations.TypedTuple<String>> zsRangeWithScores(String key) {
         return template.opsForZSet().rangeWithScores(key, 0, -1);
+    }
+
+    /**
+     * zset 存储点赞量，点击量
+     * 注意：仅供服务器启动读取数据使用
+     * @param key key
+     * @param value id
+     * @param score 分数
+     */
+    public void zsAdd(String key, String value, Double score) {
+        template.opsForZSet().add(key, value, score);
     }
 
     /**
