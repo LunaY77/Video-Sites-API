@@ -41,10 +41,47 @@
 ### 3. 互动模块
 实现接口:
 点赞，点赞列表，评论，评论列表，删除评论
-* 采用 Redis 处理高频操作，使用 zset 缓存 点击量，点赞量，使用 hash 存储 点赞关系
+* 采用 Redis 处理高频操作，使用 zset 缓存 点击量，点赞量(当数量相同时，采用时间戳记录更新时间，新更新的更大)，使用 hash 存储 点赞关系
+* 实现持久化存储，在关闭服务器时将 redis缓存 持久化存储至 MySQL
 * 采用 dfs 算法，获得父评论的子评论数量，删除父评论时，同步删除其子评论
 
 ### 4. 社交模块
 实现接口：
 关注，关注列表，粉丝列表，朋友列表
 * 采用内连接查询朋友列表
+
+## 感想
+函数时编程真好玩 ~~(真tm装b，希望我过几天回头还能看懂我的代码)~~
+
+伟大，无需多言
+``` Java
+    /**
+     * 持久化存储 点赞量，点击量
+     */
+    @Override
+    public void transCountValueFromRedis2DB() {
+        // 处理 视频 点赞量
+        Set<ZSetOperations.TypedTuple<String>> videoReCommendCountSet = redisUtil.zsRangeWithScores(Const.VIDEO_RECOMMEND_COUNT);
+        transLikeCount(videoReCommendCountSet, Videos::insertRecommendCount, videosService::saveOrUpdateBatch);
+        // 处理 视频 点击量
+        Set<ZSetOperations.TypedTuple<String>> videoClickCountSet = redisUtil.zsRangeWithScores(Const.VIDEO_CLICK_COUNT);
+        transLikeCount(videoClickCountSet, Videos::insertClickCount, videosService::saveOrUpdateBatch);
+        // 处理 评论 点赞量
+        Set<ZSetOperations.TypedTuple<String>> commendRecommendCountSet = redisUtil.zsRangeWithScores(Const.COMMENT_RECOMMEND_COUNT);
+        transLikeCount(commendRecommendCountSet, Comment::insertCount, commentService::saveOrUpdateBatch);
+    }
+
+    private <T> void transLikeCount(Set<ZSetOperations.TypedTuple<String>> set, Function<CountParams, T> mapper, Consumer<List<T>> service) {
+        List<T> lst = new ArrayList<>();
+        set.forEach(s -> {
+            String value = s.getValue();
+            Double score = s.getScore();
+            int count = score.intValue();
+            Timestamp update = new Timestamp((long) ((score - count) * 1e13));
+            CountParams countParams = new CountParams(Long.parseLong(value), new Date(), count, update);
+            T result = mapper.apply(countParams);
+            lst.add(result);
+        });
+        service.accept(lst);
+    }
+```

@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iflove.entity.Const;
-import com.iflove.entity.dto.Followers;
 import com.iflove.entity.dto.Videos;
 import com.iflove.entity.vo.request.VideoPostVO;
-import com.iflove.entity.vo.response.FollowInfoVO;
 import com.iflove.entity.vo.response.ListVO;
 import com.iflove.entity.vo.response.VideoInfoVO;
 import com.iflove.service.AccountService;
@@ -17,9 +15,7 @@ import com.iflove.utils.FileConfig;
 import com.iflove.utils.FileUtil;
 import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.*;
@@ -143,8 +139,8 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
     @Override
     public ListVO<VideoInfoVO> popular(int pageNum, int pageSize, boolean type) {
         Set<String> set;
-        if (type) set = redisUtil.zsreverseRangeWithScores(Const.VIDEO_CLICK_COUNT);
-        else set = redisUtil.zsreverseRangeWithScores(Const.VIDEO_RECOMMEND_COUNT);
+        if (type) set = redisUtil.zsreverseRange(Const.VIDEO_CLICK_COUNT);
+        else set = redisUtil.zsreverseRange(Const.VIDEO_RECOMMEND_COUNT);
         int start = pageNum * pageSize;
         int end = start + pageSize;
         int i = 0;

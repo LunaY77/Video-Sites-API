@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import com.iflove.entity.BaseData;
+import com.iflove.entity.CountParams;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,6 +41,8 @@ public class Comment implements BaseData {
 
     private Boolean isDeleted;
 
+    private Timestamp recommendUpdatedAt;
+
     public Comment(Long videoId, Long parentId, String content, Long createdBy, Date createdAt, Date updatedAt) {
         this.videoId = videoId;
         this.parentId = parentId;
@@ -46,5 +50,14 @@ public class Comment implements BaseData {
         this.createdBy = createdBy;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public static Comment insertCount(CountParams countParams) {
+        Comment comment = new Comment();
+        comment.setId(comment.getId());
+        comment.setUpdatedAt(countParams.getDate());
+        comment.setRecommendCount(countParams.getCount());
+        comment.setRecommendUpdatedAt(countParams.getUpdate());
+        return comment;
     }
 }

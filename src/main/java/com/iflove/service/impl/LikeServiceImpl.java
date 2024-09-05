@@ -1,16 +1,23 @@
 package com.iflove.service.impl;
 
 import com.iflove.entity.Const;
+import com.iflove.entity.CountParams;
+import com.iflove.entity.dto.Comment;
+import com.iflove.entity.dto.LikesComment;
+import com.iflove.entity.dto.LikesVideo;
+import com.iflove.entity.dto.Videos;
 import com.iflove.entity.vo.response.ListVO;
 import com.iflove.entity.vo.response.VideoInfoVO;
-import com.iflove.service.LikeService;
-import com.iflove.service.VideosService;
+import com.iflove.service.*;
 import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author 苍镜月
@@ -23,6 +30,12 @@ public class LikeServiceImpl implements LikeService {
     RedisUtil redisUtil;
     @Resource
     VideosService videosService;
+    @Resource
+    LikesVideoService likesVideoService;
+    @Resource
+    LikesCommentService likesCommentService;
+    @Resource
+    CommentService commentService;
 
     /**
      * 点赞视频或评论
@@ -95,26 +108,64 @@ public class LikeServiceImpl implements LikeService {
     }
 
 
-    // 持久化存储
+    /**
+     * 持久化存储 点赞关系
+     */
     @Override
     public void transLikeFromRedis2DB() {
+        // 获得redis缓存的点赞关系
+        // 处理 用户 - 视频 点赞关系 存储
+        Map<Object, Object> videoUserLikedMap = redisUtil.hGetAllLikeList(Const.VIDEO_USER_LIKED);
+        this.transLike(videoUserLikedMap,
+                split -> new LikesVideo(Long.parseLong(split[0]), Long.parseLong(split[1])),
+                likesVideoService::saveBatch);
 
+        // 处理 用户 - 评论 点赞关系 存储
+        Map<Object, Object> commentUserLikedMap = redisUtil.hGetAllLikeList(Const.COMMENT_USER_LIKED);
+        this.transLike(commentUserLikedMap,
+                split -> new LikesComment(Long.parseLong(split[0]), Long.parseLong(split[1])),
+                likesCommentService::saveBatch);
     }
 
+    private <T> void transLike(Map<Object, Object> likedMap, Function<String[], T> mapper, Consumer<List<T>> service) {
+        List<T> likesList = new ArrayList<>();
+        likedMap.forEach((k, v) -> {
+            if (v.toString().equals("1")) {
+                String[] split = k.toString().split("::");
+                likesList.add(mapper.apply(split));
+            }
+        });
+        service.accept(likesList);
+    }
+
+    /**
+     * 持久化存储 点赞量，点击量
+     */
     @Override
-    public void transVideoLikeCountFromRedis2DB() {
-
+    public void transCountValueFromRedis2DB() {
+        // 处理 视频 点赞量
+        Set<ZSetOperations.TypedTuple<String>> videoReCommendCountSet = redisUtil.zsRangeWithScores(Const.VIDEO_RECOMMEND_COUNT);
+        transLikeCount(videoReCommendCountSet, Videos::insertRecommendCount, videosService::saveOrUpdateBatch);
+        // 处理 视频 点击量
+        Set<ZSetOperations.TypedTuple<String>> videoClickCountSet = redisUtil.zsRangeWithScores(Const.VIDEO_CLICK_COUNT);
+        transLikeCount(videoClickCountSet, Videos::insertClickCount, videosService::saveOrUpdateBatch);
+        // 处理 评论 点赞量
+        Set<ZSetOperations.TypedTuple<String>> commendRecommendCountSet = redisUtil.zsRangeWithScores(Const.COMMENT_RECOMMEND_COUNT);
+        transLikeCount(commendRecommendCountSet, Comment::insertCount, commentService::saveOrUpdateBatch);
     }
 
-    @Override
-    public void transCommentLikeCountFromRedis2DB() {
-
+    private <T> void transLikeCount(Set<ZSetOperations.TypedTuple<String>> set, Function<CountParams, T> mapper, Consumer<List<T>> service) {
+        List<T> lst = new ArrayList<>();
+        set.forEach(s -> {
+            String value = s.getValue();
+            Double score = s.getScore();
+            int count = score.intValue();
+            Timestamp update = new Timestamp((long) ((score - count) * 1e13));
+            CountParams countParams = new CountParams(Long.parseLong(value), new Date(), count, update);
+            T result = mapper.apply(countParams);
+            lst.add(result);
+        });
+        service.accept(lst);
     }
-
-    @Override
-    public void transClickCountFromRedis2DB() {
-
-    }
-
-
 }
+

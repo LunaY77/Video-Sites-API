@@ -51,18 +51,20 @@ create index id
 
 create table video_videos
 (
-    id              bigint            not null
+    id                   bigint            not null
         primary key,
-    title           varchar(255)      null,
-    description     varchar(1000)     null,
-    created_at      datetime          null,
-    updated_at      datetime          null,
-    file_path       varchar(255)      null,
-    author_id       bigint            not null,
-    click_count     int     default 0 null,
-    recommend_count int     default 0 null,
-    comment_count   int     default 0 null,
-    is_deleted      tinyint default 0 null,
+    title                varchar(255)      null,
+    description          varchar(1000)     null,
+    created_at           datetime          null,
+    updated_at           datetime          null,
+    file_path            varchar(255)      null,
+    author_id            bigint            not null,
+    click_count          int     default 0 null,
+    recommend_count      int     default 0 null,
+    comment_count        int     default 0 null,
+    is_deleted           tinyint default 0 null,
+    click_updated_at     timestamp         null,
+    recommend_updated_at timestamp         null,
     constraint video_videos_ibfk_1
         foreign key (author_id) references user_account (id)
 );
@@ -87,16 +89,17 @@ create index video_id
 
 create table video_comment
 (
-    id              bigint                 not null
+    id                   bigint                 not null
         primary key,
-    video_id        bigint                 not null,
-    parent_id       bigint  default (-(1)) null,
-    content         varchar(1000)          null,
-    recommend_count int     default 0      null,
-    created_by      bigint                 not null,
-    created_at      datetime               null,
-    updated_at      datetime               null,
-    is_deleted      tinyint default 0      null,
+    video_id             bigint                 not null,
+    parent_id            bigint  default (-(1)) null,
+    content              varchar(1000)          null,
+    recommend_count      int     default 0      null,
+    created_by           bigint                 not null,
+    created_at           datetime               null,
+    updated_at           datetime               null,
+    is_deleted           tinyint default 0      null,
+    recommend_updated_at timestamp              null,
     constraint video_comment_ibfk_1
         foreign key (video_id) references video_videos (id),
     constraint video_comment_ibfk_2

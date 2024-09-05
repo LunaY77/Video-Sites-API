@@ -12,7 +12,5 @@ public interface LikeService {
     String action(String userId, String videoSid, String commentSid, Integer actionType);
     ListVO<VideoInfoVO> likeList(String userId, int pageNum, int pageSize);
     void transLikeFromRedis2DB();
-    void transVideoLikeCountFromRedis2DB();
-    void transCommentLikeCountFromRedis2DB();
-    void transClickCountFromRedis2DB();
+    void transCountValueFromRedis2DB();
 }

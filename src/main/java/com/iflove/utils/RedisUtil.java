@@ -3,6 +3,7 @@ package com.iflove.utils;
 import com.iflove.entity.Const;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -62,8 +63,17 @@ public class RedisUtil {
      * @param key key
      * @return 通过索引区间返回有序集合成指定区间内的成员对象，其中有序集成员按分数值递减(从大到小)顺序排列
      */
-    public Set<String> zsreverseRangeWithScores(String key){
+    public Set<String> zsreverseRange(String key){
         return template.opsForZSet().reverseRange(key, 0, -1);
+    }
+
+    /**
+     * 获取所有字段和值
+     * @param key key
+     * @return 通过索引区间返回有序集合成指定区间内的成员对象，其中有序集成员按分数值递增(从小到大)顺序排列
+     */
+    public Set<ZSetOperations.TypedTuple<String>> zsRangeWithScores(String key) {
+        return template.opsForZSet().rangeWithScores(key, 0, -1);
     }
 
     /**
@@ -157,4 +167,12 @@ public class RedisUtil {
         return result;
     }
 
+    /**
+     * 获取该key下的所有点赞关系
+     * @param key key
+     * @return map
+     */
+    public Map<Object, Object> hGetAllLikeList(String key) {
+        return template.opsForHash().entries(key);
+    }
 }

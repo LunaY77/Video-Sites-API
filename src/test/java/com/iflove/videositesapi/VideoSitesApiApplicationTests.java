@@ -4,6 +4,7 @@ import com.iflove.entity.Const;
 import com.iflove.entity.dto.Followers;
 import com.iflove.mapper.FollowersMapper;
 import com.iflove.service.FollowersService;
+import com.iflove.service.LikeService;
 import com.iflove.utils.FileUtil;
 import com.iflove.utils.RedisUtil;
 import jakarta.annotation.Resource;
@@ -82,4 +83,13 @@ class VideoSitesApiApplicationTests {
         System.out.println(score);
     }
 
+    @Resource
+    LikeService likeService;
+
+    @Test
+    public void test6() {
+        likeService.transLikeFromRedis2DB();
+        likeService.transCountValueFromRedis2DB();
+        System.out.println("存储成功");
+    }
 }
