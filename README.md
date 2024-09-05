@@ -23,6 +23,127 @@
 * 大量使用反射，函数时编程简化代码，代码简洁高效
 * 项目整体结构清晰，职责明确，注释全面
 
+## 项目结构树
+```
+|
+├─java
+│  └─com
+│      └─iflove
+│          │  MainApplication.java                                          启动类
+│          │  
+│          ├─config
+│          │      MybatisConfiguration.java                                 mybatis配置类
+│          │      RabbitConfiguration.java                                  RabbitMQ配置类
+│          │      RedisConfiguration.java                                   Redis配置类
+│          │      SecurityConfiguration.java                                SpringSecurity配置类
+│          │      WebConfiguration.java                                     Web配置类
+│          │      
+│          ├─controller
+│          │  ├─exception
+│          │  │      ValidationController.java                              异常页面Controller
+│          │  │      
+│          │  ├─interactive
+│          │  │      CommentController.java                                 评论模块
+│          │  │      LikeController.java                                    点赞模块
+│          │  │      
+│          │  ├─social
+│          │  │      RelationController.java                                社交模块
+│          │  │      
+│          │  ├─user
+│          │  │      AuthorizeController.java                               鉴权模块
+│          │  │      UserController.java                                    用户模块
+│          │  │      ValidationTestController.java                          校验模块（bug）
+│          │  │      
+│          │  └─video
+│          │          VideoController.java                                  视频模块
+│          │          
+│          ├─entity
+│          │  │  BaseData.java                                              对象转换工具
+│          │  │  Const.java                                                 常量类
+│          │  │  CountParams.java                                           点赞/点击信息
+│          │  │  RestBean.java                                              结果集
+│          │  │  ResultCodeEnum.java                                        错误代码枚举类
+│          │  │  
+│          │  ├─dto
+│          │  │      Account.java                                           账户dto
+│          │  │      Comment.java                                           评论dto
+│          │  │      Followers.java                                         关注dto
+│          │  │      LikesComment.java                                      评论点赞关系dto
+│          │  │      LikesVideo.java                                        视频点赞关系dto
+│          │  │      Role.java                                              账户权限dto
+│          │  │      Videos.java                                            视频dto
+│          │  │      
+│          │  └─vo
+│          │      ├─request                                                 
+│          │      │      ConfirmResetVO.java                                验证重置信息vo
+│          │      │      EmailRegisterVO.java                               邮箱注册信息vo
+│          │      │      EmailResetVO.java                                  邮箱重置信息vo
+│          │      │      VideoPostVO.java                                   视频上传vo
+│          │      │      
+│          │      └─response
+│          │              AuthorizeVO.java                                  用户登录验证信息vo
+│          │              CommentInfoVO.java                                评论信息vo
+│          │              FollowInfoVO.java                                 关注信息vo
+│          │              ListVO.java                                       列表信息vo
+│          │              UserInfoVO.java                                   用户信息vo
+│          │              VideoInfoVO.java                                  视频信息vo
+│          │              
+│          ├─filter
+│          │      CorsFilter.java                                           跨域过滤器
+│          │      FlowLimitFilter.java                                      限流过滤器
+│          │      
+│          ├─listener
+│          │      MailQueueListener.java                                    邮件发送监听器
+│          │      StartEndListener.java                                     服务器启动停止监听器
+│          │      
+│          ├─mapper
+│          │      AccountMapper.java                                        用户Mapper
+│          │      CommentMapper.java                                        评论Mapper
+│          │      FollowersMapper.java                                      关注Mapper
+│          │      LikesCommentMapper.java                                   评论点赞关系Mapper
+│          │      LikesVideoMapper.java                                     视频点赞关系Mapper
+│          │      VideosMapper.java                                         视频Mapper
+│          │      
+│          ├─security
+│          │      JwtAuthenticationProvider.java                            用户凭证校验
+│          │      JwtAuthenticationTokenFilter.java                         JWT-Token 过滤器
+│          │      UserDetailsImpl.java                                      UserDetails实现类
+│          │      UserDetailsServiceImpl.java                               UserDetailsService实现类
+│          │      
+│          ├─service
+│          │  │  AccountService.java                                        用户Service
+│          │  │  CommentService.java                                        评论Service
+│          │  │  FollowersService.java                                      关注Service
+│          │  │  LikesCommentService.java                                   评论点赞关系Service
+│          │  │  LikeService.java                                           点赞Service
+│          │  │  LikesVideoService.java                                     视频点赞关系Service
+│          │  │  VideosService.java                                         视频Service
+│          │  │  
+│          │  └─impl
+│          │          AccountServiceImpl.java                               用户Service实现类
+│          │          CommentServiceImpl.java                               评论Service实现类
+│          │          FollowersServiceImpl.java                             关注Service实现类
+│          │          LikesCommentServiceImpl.java                          评论点赞关系Service实现类
+│          │          LikeServiceImpl.java                                  点赞Service实现类
+│          │          LikesVideoServiceImpl.java                            视频点赞关系Service实现类
+│          │          VideosServiceImpl.java                                视频Service实现类
+│          │          
+│          └─utils
+│                  FileConfig.java                                          文件读写配置类
+│                  FileUtil.java                                            文件读写工具类
+│                  FlowUtil.java                                            限流工具类
+│                  JacksonMapper.java                                       Jackson映射类(Long -> String)
+│                  JacksonUtil.java                                         Jackson工具类
+│                  MessageHandler.java                                      消息处理工具类
+│                  RedisUtil.java                                           Redis工具类
+│                  
+└─resources
+    │  application.yaml                                                     服务器配置文件
+    
+                            
+
+```
+
 ### 1. 用户模块
 实现接口：
 登录、注册、登出、重置密码、获取用户信息、上传/修改头像
